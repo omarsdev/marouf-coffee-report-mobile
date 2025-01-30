@@ -1,12 +1,22 @@
-import {View, Text} from 'react-native';
 import React from 'react';
+import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
+
+import MainStack from './src/stack/main.stack';
 import './global.css';
+
+const navTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: 'white',
+  },
+};
 
 const App = () => {
   return (
-    <View className="flex-1 justify-center items-center bg-blue-500">
-      <Text className="text-white text-lg">Hello, NativeWind!</Text>
-    </View>
+    <NavigationContainer theme={navTheme}>
+      <MainStack />
+    </NavigationContainer>
   );
 };
 
