@@ -109,7 +109,7 @@ const AddTicketsScreen = () => {
             <View className="flex-1" />
             <CustomButton
               className="flex-1"
-              title="Checkout"
+              title="Add Tickets"
               onPress={onAddTicket}
             />
             <View className="flex-1" />
