@@ -1,11 +1,5 @@
 import React, {useEffect} from 'react';
-import {
-  AppState,
-  AppStateStatus,
-  Platform,
-  StatusBar,
-  StyleSheet,
-} from 'react-native';
+import {AppState, AppStateStatus, Platform, StyleSheet} from 'react-native';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import FlashMessage from 'react-native-flash-message';
 import NetInfo from '@react-native-community/netinfo';
@@ -52,11 +46,7 @@ const App = () => {
     <QueryClientProvider client={queryClient}>
       <NavigationContainer theme={navTheme}>
         <MainStack />
-        <FlashMessage
-          position="top"
-          titleStyle={styles.centerText}
-          statusBarHeight={StatusBar.currentHeight}
-        />
+        <FlashMessage position="top" titleStyle={styles.centerText} />
       </NavigationContainer>
     </QueryClientProvider>
   );
