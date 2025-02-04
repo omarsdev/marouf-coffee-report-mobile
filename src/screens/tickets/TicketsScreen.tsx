@@ -48,73 +48,73 @@ const TicketsScreen = () => {
   return (
     <ContainerComponents>
       <HeaderComponents />
-      <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
-        Tickets list
-      </Text>
-      <View className="flex-row justify-between">
-        <View>
-          <Text className="font-poppins font-normal leading-6 text-left">
-            Department
-          </Text>
-          <CustomDropdown
-            data={departmentsData}
-            placeholder="Choose an option"
-            value={query.department}
-            onChange={value =>
-              setQuery(old => ({
-                ...old,
-                department: old.department === value ? null : value,
-              }))
-            }
-          />
-        </View>
+      <CustomLoadingProvider loading={isLoading || departmentsLoading}>
+        <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
+          Tickets list
+        </Text>
+        <View className="flex-row justify-between">
+          <View>
+            <Text className="font-poppins font-normal leading-6 text-left">
+              Department
+            </Text>
+            <CustomDropdown
+              data={departmentsData}
+              placeholder="Choose an option"
+              value={query.department}
+              onChange={value =>
+                setQuery(old => ({
+                  ...old,
+                  department: old.department === value ? null : value,
+                }))
+              }
+            />
+          </View>
 
-        <View className="self-end">
-          <View className="flex-row gap-3">
-            <TouchableOpacity
-              className={twMerge(
-                'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
-                query.status === 1 && 'bg-slate-300',
-              )}
-              onPress={() =>
-                setQuery(old => ({
-                  ...old,
-                  status: old?.status === 1 ? null : 1,
-                }))
-              }>
-              <Text className="font-poppins font-normal leading-6 text-left">
-                Complete
-              </Text>
-              <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center">
-                <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
-                  {numberOfCompleted}
+          <View className="self-end">
+            <View className="flex-row gap-3">
+              <TouchableOpacity
+                className={twMerge(
+                  'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
+                  query.status === 1 && 'bg-slate-300',
+                )}
+                onPress={() =>
+                  setQuery(old => ({
+                    ...old,
+                    status: old?.status === 1 ? null : 1,
+                  }))
+                }>
+                <Text className="font-poppins font-normal leading-6 text-left">
+                  Complete
                 </Text>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              className={twMerge(
-                'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
-                query.status === 0 && 'bg-slate-300',
-              )}
-              onPress={() =>
-                setQuery(old => ({
-                  ...old,
-                  status: old?.status === 0 ? null : 0,
-                }))
-              }>
-              <Text className="font-poppins font-normal leading-6 text-left">
-                To DO
-              </Text>
-              <View className="bg-[#BF7C00] px-2 rounded-3xl justify-center items-center">
-                <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
-                  {numberOfInProgress}
+                <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center">
+                  <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                    {numberOfCompleted}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                className={twMerge(
+                  'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
+                  query.status === 0 && 'bg-slate-300',
+                )}
+                onPress={() =>
+                  setQuery(old => ({
+                    ...old,
+                    status: old?.status === 0 ? null : 0,
+                  }))
+                }>
+                <Text className="font-poppins font-normal leading-6 text-left">
+                  To DO
                 </Text>
-              </View>
-            </TouchableOpacity>
+                <View className="bg-[#BF7C00] px-2 rounded-3xl justify-center items-center">
+                  <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                    {numberOfInProgress}
+                  </Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-      <CustomLoadingProvider loading={isLoading || departmentsLoading}>
         <ScrollView showsVerticalScrollIndicator={false}>
           {data?.tickets?.map((ticket, i) => (
             <View
@@ -157,11 +157,11 @@ const TicketsScreen = () => {
             </View>
           ))}
         </ScrollView>
+        <CustomButton
+          title="Next"
+          onPress={() => navigation.navigate('AddTicketsScreen')}
+        />
       </CustomLoadingProvider>
-      <CustomButton
-        title="Next"
-        onPress={() => navigation.navigate('AddTicketsScreen')}
-      />
     </ContainerComponents>
   );
 };
