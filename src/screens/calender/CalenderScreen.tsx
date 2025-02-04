@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text} from 'react-native';
+import {View} from 'react-native';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
@@ -8,10 +8,14 @@ import CustomButton from '@/components/custom/CustomButton';
 import {useNavigation} from '@react-navigation/native';
 import useDateStore from '@/store/useDateStore';
 import {twMerge} from 'tailwind-merge';
+import useAuthStore from '@/store/useAuth';
 
 const CalenderScreen = () => {
-  const {date} = useDateStore();
   const navigation = useNavigation();
+
+  const {date} = useDateStore();
+  const {user, isAreaManager} = useAuthStore();
+  const isCheckedIn = user?.current_branch;
 
   return (
     <ContainerComponents>
@@ -22,7 +26,15 @@ const CalenderScreen = () => {
       <CustomButton
         disabled={!date}
         className={twMerge(!date && 'opacity-50')}
-        onPress={() => navigation.navigate('SeeScheduleScreen')}
+        onPress={() =>
+          navigation.navigate(
+            isCheckedIn
+              ? 'HomeScreen'
+              : isAreaManager
+              ? 'SeeScheduleScreen'
+              : 'HomeScreen',
+          )
+        }
         title="Next"
       />
     </ContainerComponents>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -13,17 +13,36 @@ import LoginIcon from '@/assets/svg/LoginIcon';
 import LoginBackgroundIcon from '@/assets/svg/LoginBackgroundIcon';
 import {normalize} from '@/utils';
 import {CommonActions, useNavigation} from '@react-navigation/native';
+import {authAPI} from '@/api/auth';
+import CustomButton from '@/components/custom/CustomButton';
+import {userAPI} from '@/api/user';
+import {showMessage} from 'react-native-flash-message';
+import useAuthStore from '@/store/useAuth';
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const {setToken, setUser} = useAuthStore();
 
-  const onSign = () => {
-    navigation.dispatch(
-      CommonActions.reset({
-        index: 0,
-        routes: [{name: 'CalenderScreen'}],
-      }),
-    );
+  const [info, setInfo] = useState({email: '', password: ''});
+
+  const onSign = async () => {
+    try {
+      const {token} = (await authAPI.login(info)) as any;
+      const res = (await userAPI.me(token)) as any;
+      setToken(token);
+      setUser(res);
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'CalenderScreen'}],
+        }),
+      );
+    } catch (error) {
+      // showMessage({
+      //   message: error?.message || error,
+      //   type: 'danger',
+      // });
+    }
   };
 
   return (
@@ -53,6 +72,10 @@ const LoginScreen = () => {
                 <TextInput
                   className="border-[1px]"
                   placeholder="Email"
+                  onChangeText={email => setInfo(old => ({...old, email}))}
+                  value={info.email}
+                  autoCapitalize="none"
+                  keyboardType="email-address"
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 20,
@@ -63,6 +86,12 @@ const LoginScreen = () => {
                 <TextInput
                   className="border-[1px]"
                   placeholder="Password"
+                  autoCapitalize="none"
+                  secureTextEntry={true}
+                  onChangeText={password =>
+                    setInfo(old => ({...old, password}))
+                  }
+                  value={info.password}
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 20,
@@ -70,11 +99,12 @@ const LoginScreen = () => {
                     borderRadius: 8,
                   }}
                 />
-                <TouchableOpacity
+                {/* <TouchableOpacity
                   onPress={onSign}
                   className="py-4 bg-[#171717] rounded-3xl">
                   <Text className="text-white text-center">Sign In</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
+                <CustomButton title="Sign In" onPress={onSign} />
               </View>
               <View />
             </View>

@@ -90,5 +90,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+  	<string>Need an access to your location</string>
+	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
+  	<string>Need an access to your location</string>
 </dict>
 </plist>

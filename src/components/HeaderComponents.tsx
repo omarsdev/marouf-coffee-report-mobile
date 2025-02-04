@@ -1,4 +1,4 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, Text, TouchableOpacity, Platform} from 'react-native';
 import React, {useRef, useState} from 'react';
 import PersonIcon from '@/assets/svg/PersonIcon';
 import {normalize} from '@/utils';
@@ -9,7 +9,12 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {Dropdown, IDropdownRef} from 'react-native-element-dropdown';
-import {useNavigation} from '@react-navigation/native';
+import {CommonActions, useNavigation} from '@react-navigation/native';
+import useAuthStore from '@/store/useAuth';
+import {checkAPI} from '@/api/check';
+import Permission, {requestLocationAccuracy} from 'react-native-permissions';
+import Geolocation from 'react-native-geolocation-service';
+import useDateStore from '@/store/useDateStore';
 
 const data = [
   {
@@ -48,20 +53,72 @@ const data = [
     value: '6',
     screenName: 'TicketsScreen',
   },
-  {
-    label: 'Log out',
-    icon: <MaterialIcons name="logout" color="black" size={20} />,
-    value: '7',
-    screenName: '',
-  },
 ];
 
 const HeaderComponents = () => {
   const navigation = useNavigation();
+  const {user, resetAuthStore} = useAuthStore();
+  const {selectedBranch, resetDateStore} = useDateStore();
 
   const ref = useRef<IDropdownRef>(null);
 
   const [value, setValue] = useState<string | null>(null);
+
+  const onLogoutHandler = async () => {
+    if (user?.current_branch) {
+      Permission.request(
+        Platform.OS === 'ios'
+          ? 'ios.permission.LOCATION_WHEN_IN_USE'
+          : 'android.permission.ACCESS_FINE_LOCATION',
+      ).then(async () => {
+        await requestLocationAccuracy({
+          purposeKey: 'Need an access to the app',
+        }).then(() => {
+          Geolocation.getCurrentPosition(
+            async position => {
+              const {coords} = position;
+              const {latitude, longitude} = coords;
+              const res = await checkAPI.out({
+                branch: selectedBranch?._id,
+                lat: latitude,
+                lng: longitude,
+              });
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{name: 'LoginScreen'}],
+                }),
+              );
+              resetDateStore();
+              resetAuthStore();
+            },
+            error => {
+              // See error code charts below.
+              console.error(error.code, error.message);
+            },
+            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+          );
+        });
+      });
+    } else {
+      navigation.dispatch(
+        CommonActions.reset({
+          index: 0,
+          routes: [{name: 'LoginScreen'}],
+        }),
+      );
+      resetDateStore();
+      resetAuthStore();
+    }
+  };
+
+  const logoutHeader = {
+    label: 'Log out',
+    icon: <MaterialIcons name="logout" color="black" size={20} />,
+    value: '7',
+    screenName: '',
+    onPressFunc: onLogoutHandler,
+  };
 
   return (
     <View className="relative">
@@ -71,7 +128,7 @@ const HeaderComponents = () => {
             <PersonIcon />
           </View>
           <Text className="font-poppins" style={{fontSize: normalize(20)}}>
-            Mohamad Ahmad
+            {user?.name?.en}
           </Text>
         </View>
         <TouchableOpacity onPress={ref.current?.open}>
@@ -81,7 +138,7 @@ const HeaderComponents = () => {
       <View className="absolute z-10 w-full top-10">
         <Dropdown
           ref={ref}
-          data={data}
+          data={[...data, logoutHeader]}
           labelField=""
           valueField=""
           placeholder=""
@@ -96,6 +153,8 @@ const HeaderComponents = () => {
                 if (item.screenName) {
                   navigation.navigate(item.screenName);
                   ref.current?.close();
+                } else if (item.onPressFunc) {
+                  item.onPressFunc();
                 }
               }}>
               {item.icon}
