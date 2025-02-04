@@ -48,7 +48,7 @@ const TicketsScreen = () => {
   return (
     <ContainerComponents>
       <HeaderComponents />
-      <CustomLoadingProvider loading={isLoading || departmentsLoading}>
+      <CustomLoadingProvider loading={departmentsLoading}>
         <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
           Tickets list
         </Text>
@@ -59,7 +59,7 @@ const TicketsScreen = () => {
             </Text>
             <CustomDropdown
               data={departmentsData}
-              placeholder="Choose an option"
+              placeholder="All"
               value={query.department}
               onChange={value =>
                 setQuery(old => ({
@@ -115,48 +115,50 @@ const TicketsScreen = () => {
             </View>
           </View>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false}>
-          {data?.tickets?.map((ticket, i) => (
-            <View
-              className="py-3 px-5 border-black border-[1px] rounded-2xl my-3"
-              key={i}>
-              <View className="flex-row gap-6 items-center">
-                <View className="w-16 h-16 bg-[#F9E5A3] rounded-full justify-center items-center">
-                  <Text>asd</Text>
-                </View>
-                <View>
-                  <Text className="text-sm font-semibold leading-5 text-left text-[#1D1B20]">
-                    {ticket?.ticket_title}
-                  </Text>
-                  <View className="flex-row items-center mt-1">
-                    <EvilIcons name="location" size={16} color={'#000'} />
-                    <Text className="font-poppins text-sm font-normal leading-6 text-left">
-                      {ticket?.branch?.name?.en}
+        <CustomLoadingProvider loading={isLoading}>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {data?.tickets?.map((ticket, i) => (
+              <View
+                className="py-3 px-5 border-black border-[1px] rounded-2xl my-3"
+                key={i}>
+                <View className="flex-row gap-6 items-center">
+                  <View className="w-16 h-16 bg-[#F9E5A3] rounded-full justify-center items-center">
+                    <Text>asd</Text>
+                  </View>
+                  <View>
+                    <Text className="text-sm font-semibold leading-5 text-left text-[#1D1B20]">
+                      {ticket?.ticket_title}
                     </Text>
-                    {ticket?.status === 0 ? (
-                      <View className="bg-[#BF7C00] px-2 rounded-3xl justify-center items-center ml-2">
-                        <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
-                          In Progress
-                        </Text>
-                      </View>
-                    ) : (
-                      <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center ml-2">
-                        <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
-                          Completed
-                        </Text>
-                      </View>
-                    )}
+                    <View className="flex-row items-center mt-1">
+                      <EvilIcons name="location" size={16} color={'#000'} />
+                      <Text className="font-poppins text-sm font-normal leading-6 text-left">
+                        {ticket?.branch?.name?.en}
+                      </Text>
+                      {ticket?.status === 0 ? (
+                        <View className="bg-[#BF7C00] px-2 rounded-3xl justify-center items-center ml-2">
+                          <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                            In Progress
+                          </Text>
+                        </View>
+                      ) : (
+                        <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center ml-2">
+                          <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                            Completed
+                          </Text>
+                        </View>
+                      )}
+                    </View>
                   </View>
                 </View>
+                <View className="mt-5">
+                  <Text className="text-lg font-medium leading-5 text-left text-[#49454F]">
+                    {ticket?.ticket_description}
+                  </Text>
+                </View>
               </View>
-              <View className="mt-5">
-                <Text className="text-lg font-medium leading-5 text-left text-[#49454F]">
-                  {ticket?.ticket_description}
-                </Text>
-              </View>
-            </View>
-          ))}
-        </ScrollView>
+            ))}
+          </ScrollView>
+        </CustomLoadingProvider>
         <CustomButton
           title="Next"
           onPress={() => navigation.navigate('AddTicketsScreen')}
