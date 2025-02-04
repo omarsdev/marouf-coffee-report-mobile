@@ -3,10 +3,10 @@ import React, {useRef, useState} from 'react';
 import PersonIcon from '@/assets/svg/PersonIcon';
 import {normalize} from '@/utils';
 import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import {Dropdown, IDropdownRef} from 'react-native-element-dropdown';
 import {CommonActions, useNavigation} from '@react-navigation/native';
@@ -19,7 +19,7 @@ import useDateStore from '@/store/useDateStore';
 const data = [
   {
     label: 'Profile',
-    icon: <PersonIcon fill="#000" />,
+    icon: <Ionicons name="person" color="black" size={20} />,
     value: '1',
     screenName: '',
   },
@@ -39,7 +39,7 @@ const data = [
     label: 'Checklist',
     icon: <FontAwesome5 name="tasks" color="black" size={20} />,
     value: '4',
-    screenName: 'BranchTasksScreen',
+    screenName: 'HomeScreen',
   },
   {
     label: 'Previous Visits',
@@ -71,34 +71,30 @@ const HeaderComponents = () => {
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
-        await requestLocationAccuracy({
-          purposeKey: 'Need an access to the app',
-        }).then(() => {
-          Geolocation.getCurrentPosition(
-            async position => {
-              const {coords} = position;
-              const {latitude, longitude} = coords;
-              const res = await checkAPI.out({
-                branch: selectedBranch?._id,
-                lat: latitude,
-                lng: longitude,
-              });
-              navigation.dispatch(
-                CommonActions.reset({
-                  index: 0,
-                  routes: [{name: 'LoginScreen'}],
-                }),
-              );
-              resetDateStore();
-              resetAuthStore();
-            },
-            error => {
-              // See error code charts below.
-              console.error(error.code, error.message);
-            },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-          );
-        });
+        await Geolocation.getCurrentPosition(
+          async position => {
+            const {coords} = position;
+            const {latitude, longitude} = coords;
+            const res = await checkAPI.out({
+              branch: selectedBranch?._id,
+              lat: latitude,
+              lng: longitude,
+            });
+            navigation.dispatch(
+              CommonActions.reset({
+                index: 0,
+                routes: [{name: 'LoginScreen'}],
+              }),
+            );
+            resetDateStore();
+            resetAuthStore();
+          },
+          error => {
+            // See error code charts below.
+            console.error(error.code, error.message);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
       });
     } else {
       navigation.dispatch(
