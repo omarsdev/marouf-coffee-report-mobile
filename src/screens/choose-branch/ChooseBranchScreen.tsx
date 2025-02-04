@@ -23,12 +23,14 @@ import {checkAPI} from '@/api/check';
 import Permission from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import useAuthStore from '@/store/useAuth';
+import {getCurrentLocation} from '@/utils/location';
 
 const ChooseBranchScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {selectedBranch, setSelectedBranchBranch} = useDateStore();
-  const {refetchUser} = useAuthStore();
+  const {user, refetchUser} = useAuthStore();
+  const isCheckedIn = user?.current_branch && user?.active;
 
   const {data, isLoading} = useQuery({
     queryFn: branchesAPI.get,
@@ -43,23 +45,35 @@ const ChooseBranchScreen = () => {
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
-        await Geolocation.getCurrentPosition(
-          async position => {
-            const {coords} = position;
-            const {latitude, longitude} = coords;
-            const res = await checkAPI.in({
-              branch: selectedBranch?._id,
-              lat: latitude,
-              lng: longitude,
-            });
-            await refetchUser();
-            navigation.navigate('HomeScreen');
-          },
-          error => {
-            console.error(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
+        const {latitude, longitude} = await getCurrentLocation();
+        const res = await checkAPI.in({
+          branch: selectedBranch?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        navigation.navigate('HomeScreen');
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onCheckoutHandler = async () => {
+    try {
+      await Permission.request(
+        Platform.OS === 'ios'
+          ? 'ios.permission.LOCATION_WHEN_IN_USE'
+          : 'android.permission.ACCESS_FINE_LOCATION',
+      ).then(async () => {
+        const {latitude, longitude} = await getCurrentLocation();
+        const res = await checkAPI.out({
+          branch: selectedBranch?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        setSelectedBranchBranch('');
       });
     } catch (error) {
       console.error(error);
@@ -122,10 +136,14 @@ const ChooseBranchScreen = () => {
             </View>
           </ScrollView>
           <CustomButton
-            title="Check In"
-            disabled={!selectedBranch}
+            title={
+              isCheckedIn
+                ? `Check Out from "${selectedBranch?.name?.en}"`
+                : 'Check In'
+            }
+            // disabled={!selectedBranch}
             className={twMerge(!selectedBranch && 'opacity-50')}
-            onPress={onCheckInHandler}
+            onPress={isCheckedIn ? onCheckoutHandler : onCheckInHandler}
           />
         </View>
       </CustomLoadingProvider>

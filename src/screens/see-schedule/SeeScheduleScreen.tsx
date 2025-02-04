@@ -19,6 +19,7 @@ import {checkAPI} from '@/api/check';
 import useAuthStore from '@/store/useAuth';
 import {assignmentsAPI} from '@/api/assignments';
 import _ from 'lodash';
+import {getCurrentLocation} from '@/utils/location';
 
 const colors = ['bg-[#F3DFF6]', 'bg-[#E5F2FE]', 'bg-[#DFEBE3]'];
 const borderColor1 = [
@@ -78,25 +79,15 @@ const SeeScheduleScreen = () => {
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
-        await Geolocation.getCurrentPosition(
-          async position => {
-            const {coords} = position;
-            const {latitude, longitude} = coords;
-            setSelectedBranchBranch(branchInfo);
-            const res = await checkAPI.in({
-              branch: branchInfo?._id,
-              lat: latitude,
-              lng: longitude,
-            });
-            await refetchUser();
-            navigation.navigate('HomeScreen');
-          },
-          error => {
-            // See error code charts below.
-            console.error(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-        );
+        const {latitude, longitude} = await getCurrentLocation();
+        setSelectedBranchBranch(branchInfo);
+        const res = await checkAPI.in({
+          branch: branchInfo?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        navigation.navigate('HomeScreen');
       });
     } catch (error) {
       console.error(error);

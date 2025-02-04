@@ -6,10 +6,16 @@ const CustomButton = ({onPress, title, className = '', disabled = false}) => {
   const [loading, setLoading] = useState(false);
 
   const onPressHandler = async () => {
-    if (!onPress) return;
+    if (!onPress || loading) return;
+
+    setLoading(true);
     try {
-      setLoading(true);
-      (await onPress()) as any;
+      const result = onPress();
+      if (result instanceof Promise) {
+        await result;
+      }
+    } catch (error) {
+      console.error('Error in button press:', error);
     } finally {
       setLoading(false);
     }

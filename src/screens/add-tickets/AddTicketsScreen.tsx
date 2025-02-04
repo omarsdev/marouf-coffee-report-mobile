@@ -32,6 +32,7 @@ import useDateStore from '@/store/useDateStore';
 import {request} from 'react-native-permissions';
 import GeoLocation from 'react-native-geolocation-service';
 import useAuthStore from '@/store/useAuth';
+import {getCurrentLocation} from '@/utils/location';
 
 const AddTicketsScreen = () => {
   const navigation = useNavigation();
@@ -87,28 +88,18 @@ const AddTicketsScreen = () => {
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
-        await GeoLocation.getCurrentPosition(
-          async position => {
-            const {coords} = position;
-            const {latitude, longitude} = coords;
-            const res = await checkAPI.out({
-              branch: selectedBranch?._id,
-              lat: latitude,
-              lng: longitude,
-            });
-            await refetchUser();
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{name: 'CalenderScreen'}],
-              }),
-            );
-          },
-          error => {
-            // See error code charts below.
-            console.error(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        const {latitude, longitude} = await getCurrentLocation();
+        const res = await checkAPI.out({
+          branch: selectedBranch?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'CalenderScreen'}],
+          }),
         );
       });
     } catch (error) {

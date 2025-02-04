@@ -15,6 +15,7 @@ import {checkAPI} from '@/api/check';
 import Permission, {requestLocationAccuracy} from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
 import useDateStore from '@/store/useDateStore';
+import {getCurrentLocation} from '@/utils/location';
 
 const data = [
   {
@@ -71,31 +72,21 @@ const HeaderComponents = () => {
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
-        await Geolocation.getCurrentPosition(
-          async position => {
-            const {coords} = position;
-            const {latitude, longitude} = coords;
-            const res = await checkAPI.out({
-              branch: selectedBranch?._id,
-              lat: latitude,
-              lng: longitude,
-            });
-            await refetchUser();
-            navigation.dispatch(
-              CommonActions.reset({
-                index: 0,
-                routes: [{name: 'LoginScreen'}],
-              }),
-            );
-            resetDateStore();
-            resetAuthStore();
-          },
-          error => {
-            // See error code charts below.
-            console.error(error.code, error.message);
-          },
-          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        const {latitude, longitude} = await getCurrentLocation();
+        const res = await checkAPI.out({
+          branch: selectedBranch?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'LoginScreen'}],
+          }),
         );
+        resetDateStore();
+        resetAuthStore();
       });
     } else {
       navigation.dispatch(
