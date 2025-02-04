@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {Platform, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {format} from 'date-fns';
 import {twMerge} from 'tailwind-merge';
@@ -36,6 +36,11 @@ const SeeScheduleScreen = () => {
 
   const [branches, setBranches] = useState([]);
 
+  const chosenBranches = useMemo(
+    () => branches.find(e => e?.selected),
+    [branches],
+  );
+
   const {data, isLoading} = useQuery({
     queryFn: () =>
       assignmentsAPI.get({
@@ -52,7 +57,6 @@ const SeeScheduleScreen = () => {
   });
 
   const onCheckBranch = id => {
-    setSelectedBranchBranch(data.branches?.find(e => e?._id === id));
     setBranches(old => {
       return old.map(branch => {
         if (branch.index === id) {
@@ -63,12 +67,11 @@ const SeeScheduleScreen = () => {
     });
   };
 
-  console.log(data);
-
   const onBranchesNavigation = () => {
     navigation.navigate('ChooseBranchScreen');
   };
   const onCheckInHandler = async () => {
+    const branchInfo = data?.find(e => e?._id === chosenBranches?.index);
     try {
       await Permission.request(
         Platform.OS === 'ios'
@@ -79,8 +82,9 @@ const SeeScheduleScreen = () => {
           async position => {
             const {coords} = position;
             const {latitude, longitude} = coords;
+            setSelectedBranchBranch(branchInfo);
             const res = await checkAPI.in({
-              branch: selectedBranch?._id,
+              branch: branchInfo?._id,
               lat: latitude,
               lng: longitude,
             });
@@ -109,6 +113,8 @@ const SeeScheduleScreen = () => {
       })),
     );
   }, [data]);
+
+  console.log(branches);
 
   return (
     <ContainerComponents>
@@ -158,10 +164,10 @@ const SeeScheduleScreen = () => {
                       className={twMerge(
                         'h-6 w-6 border-2 justify-center items-center',
                         borderColor1[i % 3],
-                        selectedBranch?._id === branch?.index &&
+                        chosenBranches?.index === branch?.index &&
                           bgColor1[i % 3],
                       )}>
-                      {selectedBranch?._id === branch?.index && (
+                      {chosenBranches?.index === branch?.index && (
                         <Feather name="check" size={13} color="white" />
                       )}
                     </View>
@@ -171,7 +177,7 @@ const SeeScheduleScreen = () => {
             ))}
           </View>
           <CustomButton
-            disabled={!selectedBranch}
+            disabled={!chosenBranches}
             title="Check In"
             onPress={onCheckInHandler}
             className="mt-5"
