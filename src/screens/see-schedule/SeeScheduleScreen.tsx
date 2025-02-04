@@ -10,12 +10,15 @@ import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import useDateStore from '@/store/useDateStore';
 import {normalize} from '@/utils';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import CustomButton from '@/components/custom/CustomButton';
 import {useQuery} from '@tanstack/react-query';
 import {branchesAPI} from '@/api/branches';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {checkAPI} from '@/api/check';
+import useAuthStore from '@/store/useAuth';
+import {assignmentsAPI} from '@/api/assignments';
+import _ from 'lodash';
 
 const colors = ['bg-[#F3DFF6]', 'bg-[#E5F2FE]', 'bg-[#DFEBE3]'];
 const borderColor1 = [
@@ -27,13 +30,25 @@ const bgColor1 = ['bg-[#820A8F]', 'bg-[#204782]', 'bg-[#2E7042]'];
 
 const SeeScheduleScreen = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const {date, selectedBranch, setSelectedBranchBranch} = useDateStore();
+  const {refetchUser} = useAuthStore();
 
   const [branches, setBranches] = useState([]);
 
   const {data, isLoading} = useQuery({
-    queryFn: branchesAPI.get,
-    queryKey: ['branches'],
+    queryFn: () =>
+      assignmentsAPI.get({
+        date: date,
+      }),
+    queryKey: ['reports' + String(date)],
+    subscribed: isFocused,
+    select: data => {
+      return _.uniqBy(
+        data?.assignments?.map(assignment => assignment?.branch),
+        '_id',
+      );
+    },
   });
 
   const onCheckBranch = id => {
@@ -47,6 +62,8 @@ const SeeScheduleScreen = () => {
       });
     });
   };
+
+  console.log(data);
 
   const onBranchesNavigation = () => {
     navigation.navigate('ChooseBranchScreen');
@@ -67,6 +84,7 @@ const SeeScheduleScreen = () => {
               lat: latitude,
               lng: longitude,
             });
+            await refetchUser();
             navigation.navigate('HomeScreen');
           },
           error => {
@@ -84,7 +102,7 @@ const SeeScheduleScreen = () => {
   useEffect(() => {
     if (!data) return;
     setBranches(
-      data?.branches?.map(e => ({
+      data?.map(e => ({
         name: e?.name?.en,
         index: e?._id,
         selected: false,

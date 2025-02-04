@@ -42,7 +42,7 @@ const data = [
     screenName: 'HomeScreen',
   },
   {
-    label: 'Previous Visits',
+    label: 'Previous Reports',
     icon: <FontAwesome6 name="clock-rotate-left" color="black" size={20} />,
     value: '5',
     screenName: 'PreviousReportsScreen',
@@ -57,7 +57,7 @@ const data = [
 
 const HeaderComponents = () => {
   const navigation = useNavigation();
-  const {user, resetAuthStore} = useAuthStore();
+  const {user, resetAuthStore, refetchUser} = useAuthStore();
   const {selectedBranch, resetDateStore} = useDateStore();
 
   const ref = useRef<IDropdownRef>(null);
@@ -80,6 +80,7 @@ const HeaderComponents = () => {
               lat: latitude,
               lng: longitude,
             });
+            await refetchUser();
             navigation.dispatch(
               CommonActions.reset({
                 index: 0,

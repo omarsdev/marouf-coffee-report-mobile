@@ -4,34 +4,23 @@ import {View, Text, ScrollView} from 'react-native';
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import CustomButton from '@/components/custom/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {useQuery} from '@tanstack/react-query';
 import {assignmentsAPI} from '@/api/assignments';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
-
-const CURRENT_REPORTS = {
-  branch: 'Branch Name',
-  date: '12/12/2021',
-  tasks: [
-    {task: 'Cleanliness', note: 'Cleanliness is good'},
-    {task: 'Staff', note: 'Cleanliness is good'},
-    {task: 'Food Quality', note: 'Cleanliness is good'},
-    {task: 'Service', note: 'Cleanliness is good'},
-    {task: 'Ambiance', note: 'Cleanliness is good'},
-    {task: 'Safety', note: 'Cleanliness is good'},
-    {task: 'Others', note: 'Cleanliness is good'},
-  ],
-};
+import {format} from 'date-fns';
 
 const PreviousReportsScreen = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
-  const {data, isLoading, refetch} = useQuery({
+  const {data, isLoading} = useQuery({
     queryFn: () =>
       assignmentsAPI.get({
         completed: true,
       }),
     queryKey: ['reportscompleted'],
+    subscribed: isFocused,
   });
 
   const onNextNavigation = () => navigation.navigate('TicketsScreen');
@@ -60,7 +49,7 @@ const PreviousReportsScreen = () => {
                       {assignment?.reportId?.title}
                     </Text>
                     <Text className="font-poppins text-lg font-medium leading-6 text-left text-[#4F4F4F]">
-                      25/01/2025
+                      {format(new Date(assignment?.created_at), 'dd/MM/yyyy')}
                     </Text>
                   </View>
                 </View>

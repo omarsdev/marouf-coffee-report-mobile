@@ -6,7 +6,7 @@ import EvilIcons from 'react-native-vector-icons/EvilIcons';
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import CustomButton from '@/components/custom/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {ticketsAPI} from '@/api/tickets';
 import {useQuery} from '@tanstack/react-query';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
@@ -15,6 +15,7 @@ import {twMerge} from 'tailwind-merge';
 
 const TicketsScreen = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
 
   const [query, setQuery] = useState({
     status: null,
@@ -24,6 +25,7 @@ const TicketsScreen = () => {
   const {data, isLoading} = useQuery({
     queryFn: () => ticketsAPI.get(query),
     queryKey: ['tickets', JSON.stringify(query)],
+    subscribed: isFocused,
   });
   const {data: departmentsData, isLoading: departmentsLoading} = useQuery({
     queryFn: departmentsAPI.get,
@@ -34,6 +36,7 @@ const TicketsScreen = () => {
         value: e?._id,
       }));
     },
+    subscribed: isFocused,
   });
 
   const numberOfInProgress =
@@ -111,9 +114,6 @@ const TicketsScreen = () => {
                   <Text className="text-sm font-semibold leading-5 text-left text-[#1D1B20]">
                     {ticket?.ticket_title}
                   </Text>
-                  {/* <Text className="font-poppins text-lg font-medium leading-6 text-left text-[#4F4F4F]">
-                      {format(new Date(ticket?.created_at), 'dd/MM/yyyy')}
-                    </Text> */}
                   <View className="flex-row items-center mt-1">
                     <EvilIcons name="location" size={16} color={'#000'} />
                     <Text className="font-poppins text-sm font-normal leading-6 text-left">

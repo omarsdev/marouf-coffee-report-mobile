@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -13,22 +13,26 @@ import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import {normalize} from '@/utils';
 import CustomButton from '@/components/custom/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {twMerge} from 'tailwind-merge';
 import {useQuery} from '@tanstack/react-query';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {branchesAPI} from '@/api/branches';
 import useDateStore from '@/store/useDateStore';
 import {checkAPI} from '@/api/check';
-import Permission, {requestLocationAccuracy} from 'react-native-permissions';
+import Permission from 'react-native-permissions';
 import Geolocation from 'react-native-geolocation-service';
+import useAuthStore from '@/store/useAuth';
 
 const ChooseBranchScreen = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const {selectedBranch, setSelectedBranchBranch} = useDateStore();
+  const {refetchUser} = useAuthStore();
 
   const {data, isLoading} = useQuery({
     queryFn: branchesAPI.get,
+    subscribed: isFocused,
     queryKey: ['branches'],
   });
 
@@ -48,6 +52,7 @@ const ChooseBranchScreen = () => {
               lat: latitude,
               lng: longitude,
             });
+            await refetchUser();
             navigation.navigate('HomeScreen');
           },
           error => {

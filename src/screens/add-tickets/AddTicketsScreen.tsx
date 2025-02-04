@@ -9,14 +9,17 @@ import {
   Keyboard,
   Platform,
 } from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import CustomButton from '@/components/custom/CustomButton';
 import {normalize} from '@/utils';
-import {CommonActions, useNavigation} from '@react-navigation/native';
+import {
+  CommonActions,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import {twMerge} from 'tailwind-merge';
 import {ticketsAPI} from '@/api/tickets';
 import {useQuery} from '@tanstack/react-query';
@@ -26,18 +29,20 @@ import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import CustomDropdown from '@/components/custom/CustomDropdown';
 import {checkAPI} from '@/api/check';
 import useDateStore from '@/store/useDateStore';
-import {request, requestLocationAccuracy} from 'react-native-permissions';
+import {request} from 'react-native-permissions';
 import GeoLocation from 'react-native-geolocation-service';
 import useAuthStore from '@/store/useAuth';
 
 const AddTicketsScreen = () => {
   const navigation = useNavigation();
+  const isFocused = useIsFocused();
   const {selectedBranch} = useDateStore();
-  const {user} = useAuthStore();
+  const {user, refetchUser} = useAuthStore();
 
   const {data: branchesData, isLoading: branchesLoading} = useQuery({
     queryFn: branchesAPI.get,
     queryKey: ['branches'],
+    subscribed: isFocused,
     select: data => {
       return data?.branches?.map(e => ({
         label: e?.name?.en,
@@ -49,6 +54,7 @@ const AddTicketsScreen = () => {
   const {data: departmentsData, isLoading: departmentsLoading} = useQuery({
     queryFn: departmentsAPI.get,
     queryKey: ['departments'],
+    subscribed: isFocused,
     select: data => {
       return data?.departments?.map(e => ({
         label: e?.department_name?.en,
@@ -90,6 +96,7 @@ const AddTicketsScreen = () => {
               lat: latitude,
               lng: longitude,
             });
+            await refetchUser();
             navigation.dispatch(
               CommonActions.reset({
                 index: 0,

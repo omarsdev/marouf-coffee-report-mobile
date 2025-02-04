@@ -8,15 +8,11 @@ import ContainerComponents from '@/components/container/ContainerComponents';
 import {normalize} from '@/utils';
 import {twMerge} from 'tailwind-merge';
 import CustomButton from '@/components/custom/CustomButton';
-import {useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import useDateStore from '@/store/useDateStore';
 import {useQuery} from '@tanstack/react-query';
-import {ticketsAPI} from '@/api/tickets';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
-import {reportsAPI} from '@/api/reports';
-import useAuthStore from '@/store/useAuth';
 import {assignmentsAPI} from '@/api/assignments';
-import {redux} from 'zustand/middleware';
 import {submissionsAPI} from '@/api/submissions';
 
 const TASKS_COLORS = [
@@ -29,6 +25,7 @@ const TASKS_COLORS = [
 const HomeScreen = () => {
   const navigation = useNavigation();
   const {selectedBranch, date} = useDateStore();
+  const isFocused = useIsFocused();
 
   const {data, isLoading, refetch} = useQuery({
     queryFn: () =>
@@ -37,6 +34,7 @@ const HomeScreen = () => {
         date: date,
       }),
     queryKey: ['reports' + String(date) + String(selectedBranch?._id)],
+    subscribed: isFocused,
   });
 
   const onNextNavigate = () => navigation.navigate('PreviousReportsScreen');

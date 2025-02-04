@@ -17,6 +17,16 @@ const CalenderScreen = () => {
   const {user, isAreaManager} = useAuthStore();
   const isCheckedIn = user?.current_branch && user?.active;
 
+  const onNextHandler = () => {
+    navigation.navigate(
+      isCheckedIn
+        ? 'HomeScreen'
+        : isAreaManager
+        ? 'SeeScheduleScreen'
+        : 'HomeScreen',
+    );
+  };
+
   return (
     <ContainerComponents>
       <HeaderComponents />
@@ -26,15 +36,7 @@ const CalenderScreen = () => {
       <CustomButton
         disabled={!date}
         className={twMerge(!date && 'opacity-50')}
-        onPress={() =>
-          navigation.navigate(
-            isCheckedIn
-              ? 'HomeScreen'
-              : isAreaManager
-              ? 'SeeScheduleScreen'
-              : 'HomeScreen',
-          )
-        }
+        onPress={onNextHandler}
         title="Next"
       />
     </ContainerComponents>

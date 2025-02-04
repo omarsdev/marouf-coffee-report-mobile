@@ -1,6 +1,7 @@
 import {create, StateCreator} from 'zustand';
 import {persist, createJSONStorage} from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {userAPI} from '@/api/user';
 
 interface AuthStore {
   token: string | null;
@@ -11,6 +12,7 @@ interface AuthStore {
   setToken: (state: string) => void;
   setUser: (state: any) => void;
   resetAuthStore: () => void;
+  refetchUser: () => Promise<void>;
 }
 
 const authStore: StateCreator<AuthStore> = (set, get) => ({
@@ -26,6 +28,10 @@ const authStore: StateCreator<AuthStore> = (set, get) => ({
   },
   setToken: (token: string) => set({token}),
   setUser: (user: any) => set({user, isAreaManager: user?.role === 2}),
+  refetchUser: async () => {
+    const res = (await userAPI.me()) as any;
+    set({user: res});
+  },
   resetAuthStore: () =>
     set({
       token: null,
