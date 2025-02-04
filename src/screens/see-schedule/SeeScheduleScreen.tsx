@@ -105,8 +105,6 @@ const SeeScheduleScreen = () => {
     );
   }, [data]);
 
-  console.log(branches);
-
   return (
     <ContainerComponents>
       <HeaderComponents />

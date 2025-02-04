@@ -23,8 +23,6 @@ const TicketsScreen = () => {
     department: null,
   });
 
-  console.log(query);
-
   const {data, isLoading} = useQuery({
     queryFn: () => ticketsAPI.get(query),
     queryKey: ['tickets', JSON.stringify(query)],
