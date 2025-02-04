@@ -1,18 +1,17 @@
 import React, {useState} from 'react';
 import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {twMerge} from 'tailwind-merge';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
-import HeaderComponents from '@/components/HeaderComponents';
 import CustomButton from '@/components/custom/CustomButton';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import HeaderComponents from '@/components/HeaderComponents';
 import {ticketsAPI} from '@/api/tickets';
 import {useQuery} from '@tanstack/react-query';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {departmentsAPI} from '@/api/departments';
 import CustomDropdown from '@/components/custom/CustomDropdown';
-import {twMerge} from 'tailwind-merge';
 
 const TicketsScreen = () => {
   const navigation = useNavigation();

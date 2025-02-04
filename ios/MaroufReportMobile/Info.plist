@@ -94,5 +94,9 @@
   	<string>Need an access to your location</string>
 	<key>NSLocationTemporaryUsageDescriptionDictionary</key>
   	<string>Need an access to your location</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+  	<string>Need an access to your library</string>
+	<key>NSCameraUsageDescription</key>
+  	<string>Need an access to your camera</string>
 </dict>
 </plist>

@@ -343,6 +343,7 @@
 				DEVELOPMENT_TEAM = 6J6H7D2JRG;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = MaroufReportMobile/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Area Manager System";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -374,6 +375,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6J6H7D2JRG;
 				INFOPLIST_FILE = MaroufReportMobile/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Area Manager System";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

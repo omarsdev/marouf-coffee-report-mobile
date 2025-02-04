@@ -8,8 +8,11 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  Image,
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
+import mime from 'mime';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
@@ -30,15 +33,19 @@ import CustomDropdown from '@/components/custom/CustomDropdown';
 import {checkAPI} from '@/api/check';
 import useDateStore from '@/store/useDateStore';
 import {request} from 'react-native-permissions';
-import GeoLocation from 'react-native-geolocation-service';
 import useAuthStore from '@/store/useAuth';
 import {getCurrentLocation} from '@/utils/location';
+import {userAPI} from '@/api/user';
+import {ActivityIndicator} from 'react-native';
 
 const AddTicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {selectedBranch} = useDateStore();
   const {user, refetchUser} = useAuthStore();
+
+  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(false);
 
   const {data: branchesData, isLoading: branchesLoading} = useQuery({
     queryFn: branchesAPI.get,
@@ -104,6 +111,45 @@ const AddTicketsScreen = () => {
       });
     } catch (error) {
       console.error(error);
+    }
+  };
+
+  const onUploadImage = async () => {
+    try {
+      setLoading(true);
+      // Step 1: Select an image
+      const result = await launchImageLibrary({
+        mediaType: 'photo', // Ensure we only pick images
+        selectionLimit: 1,
+      });
+
+      if (result.didCancel) {
+        console.log('User cancelled image selection');
+        return;
+      }
+
+      if (result.errorCode) {
+        throw new Error(`Image picker error: ${result.errorMessage}`);
+      }
+
+      const image = result.assets?.[0];
+      if (!image) {
+        throw new Error('No image selected');
+      }
+
+      let formData = new FormData();
+      formData.append('image', {
+        uri: image?.uri,
+        name: image?.fileName || `upload_${Date.now()}.jpg`,
+        type: image?.type || 'image/jpeg',
+      });
+
+      const res = await userAPI.postImage(formData);
+      setData(old => ({...old, ticket_images: [res?.data?.url]}));
+    } catch (error) {
+      console.error('onUploadImage Error:', error.message || error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -240,14 +286,29 @@ const AddTicketsScreen = () => {
                 </ScrollView>
               </View>
 
-              <View className="bg-[#0000000F] h-24 border-[1px] border-black rounded-3xl justify-center items-center">
+              <TouchableOpacity
+                onPress={onUploadImage}
+                className="bg-[#0000000F] h-24 border-[1px] border-black rounded-3xl justify-center items-center">
                 <View className="flex-row items-center gap-3">
-                  <Entypo name="attachment" size={normalize(17)} />
-                  <Text className="text-lg font-normal leading-6 text-left underline">
-                    Attach Image
-                  </Text>
+                  {loading ? (
+                    <ActivityIndicator />
+                  ) : data?.ticket_images?.[0] ? (
+                    <Image
+                      source={{
+                        uri: data?.ticket_images?.[0],
+                      }}
+                      className="flex-1 h-24 rounded-3xl"
+                    />
+                  ) : (
+                    <>
+                      <Entypo name="attachment" size={normalize(17)} />
+                      <Text className="text-lg font-normal leading-6 text-left underline">
+                        Attach Image
+                      </Text>
+                    </>
+                  )}
                 </View>
-              </View>
+              </TouchableOpacity>
               <View className="flex-row">
                 <View className="flex-1" />
                 <CustomButton
