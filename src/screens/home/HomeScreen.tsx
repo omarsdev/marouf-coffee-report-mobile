@@ -33,8 +33,8 @@ const HomeScreen = () => {
   const {data, isLoading, refetch} = useQuery({
     queryFn: () =>
       assignmentsAPI.get({
-        // branch: selectedBranch?._id,
-        // date: date,
+        branch: selectedBranch?._id,
+        date: date,
       }),
     queryKey: ['reports' + String(date) + String(selectedBranch?._id)],
   });

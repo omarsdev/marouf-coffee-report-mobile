@@ -265,7 +265,7 @@ const AddTicketsScreen = () => {
               </View>
             </View>
 
-            {user?.current_branch && (
+            {user?.current_branch && user?.active && (
               <CustomButton
                 className="mt-8"
                 title="Checkout"

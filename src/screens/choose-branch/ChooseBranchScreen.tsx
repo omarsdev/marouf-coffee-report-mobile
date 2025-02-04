@@ -34,15 +34,15 @@ const ChooseBranchScreen = () => {
 
   const onCheckInHandler = async () => {
     try {
-      Permission.request(
+      await Permission.request(
         Platform.OS === 'ios'
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
         await requestLocationAccuracy({
           purposeKey: 'Need an access to the app',
-        }).then(() => {
-          Geolocation.getCurrentPosition(
+        }).then(async () => {
+          await Geolocation.getCurrentPosition(
             async position => {
               const {coords} = position;
               const {latitude, longitude} = coords;

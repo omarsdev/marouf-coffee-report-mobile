@@ -15,7 +15,7 @@ const CalenderScreen = () => {
 
   const {date} = useDateStore();
   const {user, isAreaManager} = useAuthStore();
-  const isCheckedIn = user?.current_branch;
+  const isCheckedIn = user?.current_branch && user?.active;
 
   return (
     <ContainerComponents>

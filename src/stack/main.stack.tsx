@@ -29,7 +29,7 @@ const MainStack = () => {
     const fetchUser = async () => {
       try {
         const res = (await userAPI.me()) as any;
-        if (res?.current_branch) {
+        if (res?.current_branch && res?.active) {
           const branch = await branchesAPI.getById(res?.current_branch);
           setSelectedBranchBranch(branch?.branch);
         }
@@ -50,7 +50,7 @@ const MainStack = () => {
       screenOptions={{headerShown: false}}
       initialRouteName={
         token
-          ? user?.current_branch
+          ? user?.current_branch && user?.active
             ? 'HomeScreen'
             : 'CalenderScreen'
           : 'LoginScreen'

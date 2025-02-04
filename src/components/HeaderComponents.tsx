@@ -65,7 +65,7 @@ const HeaderComponents = () => {
   const [value, setValue] = useState<string | null>(null);
 
   const onLogoutHandler = async () => {
-    if (user?.current_branch) {
+    if (user?.current_branch && user?.active) {
       Permission.request(
         Platform.OS === 'ios'
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
