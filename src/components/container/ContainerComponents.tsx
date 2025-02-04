@@ -12,7 +12,7 @@ const ContainerComponents: React.FC<ContainerComponentsProps> = ({
   className,
 }) => {
   return (
-    <SafeAreaView className={twMerge('flex-1 mx-10', className)}>
+    <SafeAreaView className={twMerge('flex-1 mx-10 my-5', className)}>
       {children}
     </SafeAreaView>
   );
