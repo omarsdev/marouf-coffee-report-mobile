@@ -58,27 +58,23 @@ const SeeScheduleScreen = () => {
           ? 'ios.permission.LOCATION_WHEN_IN_USE'
           : 'android.permission.ACCESS_FINE_LOCATION',
       ).then(async () => {
-        await requestLocationAccuracy({
-          purposeKey: 'Need an access to the app',
-        }).then(async () => {
-          await Geolocation.getCurrentPosition(
-            async position => {
-              const {coords} = position;
-              const {latitude, longitude} = coords;
-              const res = await checkAPI.in({
-                branch: selectedBranch?._id,
-                lat: latitude,
-                lng: longitude,
-              });
-              navigation.navigate('HomeScreen');
-            },
-            error => {
-              // See error code charts below.
-              console.error(error.code, error.message);
-            },
-            {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
-          );
-        });
+        await Geolocation.getCurrentPosition(
+          async position => {
+            const {coords} = position;
+            const {latitude, longitude} = coords;
+            const res = await checkAPI.in({
+              branch: selectedBranch?._id,
+              lat: latitude,
+              lng: longitude,
+            });
+            navigation.navigate('HomeScreen');
+          },
+          error => {
+            // See error code charts below.
+            console.error(error.code, error.message);
+          },
+          {enableHighAccuracy: true, timeout: 15000, maximumAge: 10000},
+        );
       });
     } catch (error) {
       console.error(error);
