@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import useAuthStore from '@/store/useAuth';
 import {showMessage} from 'react-native-flash-message';
+import useDateStore from '@/store/useDateStore';
 
 let axiosInstance;
 
@@ -26,6 +27,7 @@ const createAxiosInstance = async () => {
     error => {
       if (error?.response?.status === 411) {
         useAuthStore.getState().resetAuthStore();
+        useDateStore.getState().resetDateStore();
       }
       console.error(error?.response?.data);
       showMessage({
