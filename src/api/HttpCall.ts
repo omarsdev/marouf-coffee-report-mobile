@@ -24,26 +24,8 @@ const createAxiosInstance = async () => {
   axiosInstance.interceptors.response.use(
     response => Promise.resolve(response.data),
     error => {
-      if (!error.response) {
-        // showMessage({
-        //   message: 'Network Error',
-        //   type: 'danger',
-        // });
-      } else if (error.response.status === 401) {
-        // useAuth.getState().logout();
-      } else if (error.response.status === 502) {
-        // TODO
-        // showMessage({
-        //   message: 'System is Down, Please try again later.',
-        //   type: 'danger',
-        // });
-      } else if (error.response.status !== 400) {
-        // showMessage({
-        //   message: JSON.stringify(
-        //     error.response.data?.data || error.response.data,
-        //   ),
-        //   type: 'danger',
-        // });
+      if (error?.response?.status === 411) {
+        useAuthStore.getState().resetAuthStore();
       }
       console.error(error?.response?.data);
       showMessage({
