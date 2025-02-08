@@ -31,7 +31,7 @@ import {ActivityIndicator} from 'react-native';
 const AddTicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const {user, isAreaManager} = useAuthStore();
+  const {isAreaManager, user} = useAuthStore();
 
   const [loading, setLoading] = useState(false);
 
@@ -59,6 +59,18 @@ const AddTicketsScreen = () => {
     },
   });
 
+  const {data: areaManagersData, isLoading: areaManagersLoading} = useQuery({
+    queryFn: userAPI.areaManagers,
+    queryKey: ['areaManagers'],
+    subscribed: isFocused,
+    select: data => {
+      return data?.users?.map(e => ({
+        label: e?.name?.en,
+        value: e?._id,
+      }));
+    },
+  });
+
   const [data, setData] = useState({
     ticket_title: '',
     ticket_description: '',
@@ -66,11 +78,18 @@ const AddTicketsScreen = () => {
     status: 0,
     department: '',
     branch: '',
+    area_manager: '',
   });
 
   const onAddTicket = async () => {
     try {
-      const res = await ticketsAPI.create(data);
+      const res = await ticketsAPI.create({
+        ...data,
+        ...(!isAreaManager && {
+          branch: user?.branch_access,
+          department: undefined,
+        }),
+      });
       navigation.goBack();
     } catch (error) {
       console.error(error);
@@ -122,7 +141,10 @@ const AddTicketsScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ContainerComponents>
         <HeaderComponents />
-        <CustomLoadingProvider loading={branchesLoading || departmentsLoading}>
+        <CustomLoadingProvider
+          loading={
+            branchesLoading || departmentsLoading || areaManagersLoading
+          }>
           <ScrollView showsVerticalScrollIndicator={false}>
             <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
               Add New Ticket
@@ -163,14 +185,14 @@ const AddTicketsScreen = () => {
                   <Text className="mb-3 font-poppins font-normal leading-6 text-left">
                     Add area manager
                   </Text>
-                  {/* <CustomDropdown
-                    data={branchesData}
+                  <CustomDropdown
+                    data={areaManagersData}
                     placeholder="Choose an option"
-                    value={data.branch}
+                    value={data.area_manager}
                     onChange={value =>
-                      setData(old => ({...old, branch: value}))
+                      setData(old => ({...old, area_manager: value}))
                     }
-                  /> */}
+                  />
                 </View>
               )}
 

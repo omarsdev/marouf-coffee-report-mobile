@@ -24,4 +24,5 @@ export const userAPI = {
         },
       },
     ),
+  areaManagers: async () => HttpCall('/users/area_manager'),
 };

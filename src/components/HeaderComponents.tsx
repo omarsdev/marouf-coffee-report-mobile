@@ -1,5 +1,5 @@
 import {View, Text, TouchableOpacity, Platform} from 'react-native';
-import React, {useRef, useState} from 'react';
+import React, {useMemo, useRef, useState} from 'react';
 import PersonIcon from '@/assets/svg/PersonIcon';
 import {normalize} from '@/utils';
 import Feather from 'react-native-vector-icons/Feather';
@@ -12,18 +12,11 @@ import {Dropdown, IDropdownRef} from 'react-native-element-dropdown';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import useAuthStore from '@/store/useAuth';
 import {checkAPI} from '@/api/check';
-import Permission, {requestLocationAccuracy} from 'react-native-permissions';
-import Geolocation from 'react-native-geolocation-service';
+import Permission from 'react-native-permissions';
 import useDateStore from '@/store/useDateStore';
 import {getCurrentLocation} from '@/utils/location';
 
 const data = [
-  {
-    label: 'Profile',
-    icon: <Ionicons name="person" color="black" size={20} />,
-    value: '1',
-    screenName: '',
-  },
   {
     label: 'Schedule',
     icon: <Ionicons name="calendar" color="black" size={20} />,
@@ -58,7 +51,7 @@ const data = [
 
 const HeaderComponents = () => {
   const navigation = useNavigation();
-  const {user, resetAuthStore, refetchUser} = useAuthStore();
+  const {user, resetAuthStore, refetchUser, isAreaManager} = useAuthStore();
   const {selectedBranch, resetDateStore} = useDateStore();
 
   const ref = useRef<IDropdownRef>(null);
@@ -108,6 +101,16 @@ const HeaderComponents = () => {
     onPressFunc: onLogoutHandler,
   };
 
+  const headersData = useMemo(
+    () => [
+      ...(isAreaManager
+        ? data
+        : data.filter(e => e.screenName !== 'ChooseBranchScreen')),
+      logoutHeader,
+    ],
+    [isAreaManager],
+  );
+
   return (
     <View className="relative">
       <View className="flex-row px-6 py-3 items-center justify-between bg-[#F3F3F3] rounded-2xl">
@@ -126,7 +129,7 @@ const HeaderComponents = () => {
       <View className="absolute z-10 w-full top-10">
         <Dropdown
           ref={ref}
-          data={[...data, logoutHeader]}
+          data={headersData}
           labelField=""
           valueField=""
           placeholder=""

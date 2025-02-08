@@ -28,7 +28,7 @@ const TicketsScreen = () => {
   const isFocused = useIsFocused();
 
   const {selectedBranch} = useDateStore();
-  const {user, refetchUser} = useAuthStore();
+  const {user, refetchUser, isAreaManager} = useAuthStore();
 
   const [query, setQuery] = useState({
     status: null,
@@ -205,7 +205,10 @@ const TicketsScreen = () => {
           <CustomButton title="Checkout" onPress={onCheckoutHandler} />
         )}
         <TouchableOpacity
-          className="h-24 w-24 rounded-full bg-black justify-center items-center absolute bottom-20 right-0"
+          className={twMerge(
+            'h-24 w-24 rounded-full bg-black justify-center items-center absolute right-0',
+            isAreaManager ? 'bottom-20' : 'bottom-0',
+          )}
           onPress={onCreateTicketNavigation}>
           <Ionicons name="add" color="white" size={48} />
         </TouchableOpacity>
