@@ -1,7 +1,12 @@
 import React, {useState} from 'react';
-import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity, Platform} from 'react-native';
 import EvilIcons from 'react-native-vector-icons/EvilIcons';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+import {
+  CommonActions,
+  useIsFocused,
+  useNavigation,
+} from '@react-navigation/native';
 import {twMerge} from 'tailwind-merge';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
@@ -12,10 +17,18 @@ import {useQuery} from '@tanstack/react-query';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {departmentsAPI} from '@/api/departments';
 import CustomDropdown from '@/components/custom/CustomDropdown';
+import {checkAPI} from '@/api/check';
+import {request} from 'react-native-permissions';
+import {getCurrentLocation} from '@/utils/location';
+import useDateStore from '@/store/useDateStore';
+import useAuthStore from '@/store/useAuth';
 
 const TicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+
+  const {selectedBranch} = useDateStore();
+  const {user, refetchUser} = useAuthStore();
 
   const [query, setQuery] = useState({
     status: null,
@@ -39,13 +52,43 @@ const TicketsScreen = () => {
     subscribed: isFocused,
   });
 
+  const onCheckoutHandler = async () => {
+    try {
+      await request(
+        Platform.OS === 'ios'
+          ? 'ios.permission.LOCATION_WHEN_IN_USE'
+          : 'android.permission.ACCESS_FINE_LOCATION',
+      ).then(async () => {
+        const {latitude, longitude} = await getCurrentLocation();
+        const res = await checkAPI.out({
+          branch: selectedBranch?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        navigation.dispatch(
+          CommonActions.reset({
+            index: 0,
+            routes: [{name: 'CalenderScreen'}],
+          }),
+        );
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onCreateTicketNavigation = () => {
+    return navigation.navigate('AddTicketsScreen');
+  };
+
   const numberOfInProgress =
     data?.tickets?.filter(e => e?.status === 0)?.length || 0;
   const numberOfCompleted =
     data?.tickets?.filter(e => e?.status !== 0)?.length || 0;
 
   return (
-    <ContainerComponents>
+    <ContainerComponents className="relative">
       <HeaderComponents />
       <CustomLoadingProvider loading={departmentsLoading}>
         <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
@@ -158,10 +201,14 @@ const TicketsScreen = () => {
             ))}
           </ScrollView>
         </CustomLoadingProvider>
-        <CustomButton
-          title="Next"
-          onPress={() => navigation.navigate('AddTicketsScreen')}
-        />
+        {user?.current_branch && user?.active && (
+          <CustomButton title="Checkout" onPress={onCheckoutHandler} />
+        )}
+        <TouchableOpacity
+          className="h-24 w-24 rounded-full bg-black justify-center items-center absolute bottom-20 right-0"
+          onPress={onCreateTicketNavigation}>
+          <Ionicons name="add" color="white" size={48} />
+        </TouchableOpacity>
       </CustomLoadingProvider>
     </ContainerComponents>
   );

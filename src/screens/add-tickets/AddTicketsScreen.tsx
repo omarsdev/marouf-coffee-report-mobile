@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  Platform,
   Image,
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
@@ -17,11 +16,7 @@ import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import CustomButton from '@/components/custom/CustomButton';
 import {normalize} from '@/utils';
-import {
-  CommonActions,
-  useIsFocused,
-  useNavigation,
-} from '@react-navigation/native';
+import {useIsFocused, useNavigation} from '@react-navigation/native';
 import {twMerge} from 'tailwind-merge';
 import {ticketsAPI} from '@/api/tickets';
 import {useQuery} from '@tanstack/react-query';
@@ -29,19 +24,14 @@ import {departmentsAPI} from '@/api/departments';
 import {branchesAPI} from '@/api/branches';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import CustomDropdown from '@/components/custom/CustomDropdown';
-import {checkAPI} from '@/api/check';
-import useDateStore from '@/store/useDateStore';
-import {request} from 'react-native-permissions';
 import useAuthStore from '@/store/useAuth';
-import {getCurrentLocation} from '@/utils/location';
 import {userAPI} from '@/api/user';
 import {ActivityIndicator} from 'react-native';
 
 const AddTicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
-  const {selectedBranch} = useDateStore();
-  const {user, refetchUser, isAreaManager} = useAuthStore();
+  const {user, isAreaManager} = useAuthStore();
 
   const [loading, setLoading] = useState(false);
 
@@ -82,31 +72,6 @@ const AddTicketsScreen = () => {
     try {
       const res = await ticketsAPI.create(data);
       navigation.goBack();
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  const onCheckoutHandler = async () => {
-    try {
-      await request(
-        Platform.OS === 'ios'
-          ? 'ios.permission.LOCATION_WHEN_IN_USE'
-          : 'android.permission.ACCESS_FINE_LOCATION',
-      ).then(async () => {
-        const {latitude, longitude} = await getCurrentLocation();
-        const res = await checkAPI.out({
-          branch: selectedBranch?._id,
-          lat: latitude,
-          lng: longitude,
-        });
-        await refetchUser();
-        navigation.dispatch(
-          CommonActions.reset({
-            index: 0,
-            routes: [{name: 'CalenderScreen'}],
-          }),
-        );
-      });
     } catch (error) {
       console.error(error);
     }
@@ -329,24 +294,12 @@ const AddTicketsScreen = () => {
                   )}
                 </View>
               </TouchableOpacity>
-              <View className="flex-row">
-                <View className="flex-1" />
-                <CustomButton
-                  className="flex-1"
-                  title="Add Tickets"
-                  onPress={onAddTicket}
-                />
-                <View className="flex-1" />
-              </View>
-            </View>
-
-            {user?.current_branch && user?.active && (
               <CustomButton
-                className="mt-8"
-                title="Checkout"
-                onPress={onCheckoutHandler}
+                className="flex-1"
+                title="Add Tickets"
+                onPress={onAddTicket}
               />
-            )}
+            </View>
           </ScrollView>
         </CustomLoadingProvider>
       </ContainerComponents>
