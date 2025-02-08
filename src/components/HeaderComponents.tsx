@@ -59,19 +59,30 @@ const HeaderComponents = () => {
   const [value, setValue] = useState<string | null>(null);
 
   const onLogoutHandler = async () => {
-    if (user?.current_branch && user?.active) {
-      Permission.request(
-        Platform.OS === 'ios'
-          ? 'ios.permission.LOCATION_WHEN_IN_USE'
-          : 'android.permission.ACCESS_FINE_LOCATION',
-      ).then(async () => {
-        const {latitude, longitude} = await getCurrentLocation();
-        const res = await checkAPI.out({
-          branch: selectedBranch?._id,
-          lat: latitude,
-          lng: longitude,
+    try {
+      if (user?.current_branch && user?.active) {
+        Permission.request(
+          Platform.OS === 'ios'
+            ? 'ios.permission.LOCATION_WHEN_IN_USE'
+            : 'android.permission.ACCESS_FINE_LOCATION',
+        ).then(async () => {
+          const {latitude, longitude} = await getCurrentLocation();
+          const res = await checkAPI.out({
+            branch: selectedBranch?._id,
+            lat: latitude,
+            lng: longitude,
+          });
+          await refetchUser();
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [{name: 'LoginScreen'}],
+            }),
+          );
+          resetDateStore();
+          resetAuthStore();
         });
-        await refetchUser();
+      } else {
         navigation.dispatch(
           CommonActions.reset({
             index: 0,
@@ -80,17 +91,8 @@ const HeaderComponents = () => {
         );
         resetDateStore();
         resetAuthStore();
-      });
-    } else {
-      navigation.dispatch(
-        CommonActions.reset({
-          index: 0,
-          routes: [{name: 'LoginScreen'}],
-        }),
-      );
-      resetDateStore();
-      resetAuthStore();
-    }
+      }
+    } catch (error) {}
   };
 
   const logoutHeader = {
@@ -106,7 +108,6 @@ const HeaderComponents = () => {
       ...(isAreaManager
         ? data
         : data.filter(e => e.screenName !== 'ChooseBranchScreen')),
-      logoutHeader,
     ],
     [isAreaManager],
   );
@@ -129,7 +130,7 @@ const HeaderComponents = () => {
       <View className="absolute z-10 w-full top-10">
         <Dropdown
           ref={ref}
-          data={headersData}
+          data={[...headersData, logoutHeader]}
           labelField=""
           valueField=""
           placeholder=""

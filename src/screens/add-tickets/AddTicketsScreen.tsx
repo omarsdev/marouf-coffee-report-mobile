@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -27,11 +27,13 @@ import CustomDropdown from '@/components/custom/CustomDropdown';
 import useAuthStore from '@/store/useAuth';
 import {userAPI} from '@/api/user';
 import {ActivityIndicator} from 'react-native';
+import useTicketsStore from '@/store/useTickets';
 
 const AddTicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {isAreaManager, user} = useAuthStore();
+  const {defaultTickets, setTickets, tickets} = useTicketsStore();
 
   const [loading, setLoading] = useState(false);
 
@@ -71,15 +73,7 @@ const AddTicketsScreen = () => {
     },
   });
 
-  const [data, setData] = useState({
-    ticket_title: '',
-    ticket_description: '',
-    priority: null,
-    status: 0,
-    department: '',
-    branch: '',
-    area_manager: '',
-  });
+  const [data, setData] = useState(tickets || defaultTickets);
 
   const onAddTicket = async () => {
     try {
@@ -135,7 +129,13 @@ const AddTicketsScreen = () => {
     }
   };
 
-  // TODO Add api to get the area managers
+  useEffect(() => {
+    setTickets(tickets || defaultTickets);
+  }, []);
+
+  useEffect(() => {
+    setTickets(data);
+  }, [data]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
