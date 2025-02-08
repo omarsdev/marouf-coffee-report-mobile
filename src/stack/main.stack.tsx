@@ -1,6 +1,5 @@
 import React, {useEffect, useState, useCallback, useMemo} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {View, ActivityIndicator} from 'react-native';
 
 import LoginScreen from '@/screens/login/Login.Screen';
 import CalenderScreen from '@/screens/calender/CalenderScreen';
@@ -18,6 +17,7 @@ import useDateStore from '@/store/useDateStore';
 import {userAPI} from '@/api/user';
 import {branchesAPI} from '@/api/branches';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
+import ReportScreen from '@/screens/report/ReportScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -71,6 +71,7 @@ const MainStack = () => {
         />
         <Stack.Screen name="BranchTasksScreen" component={BranchTasksScreen} />
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="ReportScreen" component={ReportScreen} />
         <Stack.Screen
           name="PreviousReportsScreen"
           component={PreviousReportsScreen}

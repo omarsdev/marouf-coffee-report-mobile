@@ -3,6 +3,7 @@ import {AppState, AppStateStatus, Platform, StyleSheet} from 'react-native';
 import {DefaultTheme, NavigationContainer} from '@react-navigation/native';
 import FlashMessage from 'react-native-flash-message';
 import NetInfo from '@react-native-community/netinfo';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {
   focusManager,
   onlineManager,
@@ -43,12 +44,14 @@ const App = () => {
   }, []);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <NavigationContainer theme={navTheme}>
-        <MainStack />
-        <FlashMessage position="top" titleStyle={styles.centerText} />
-      </NavigationContainer>
-    </QueryClientProvider>
+    <GestureHandlerRootView>
+      <QueryClientProvider client={queryClient}>
+        <NavigationContainer theme={navTheme}>
+          <MainStack />
+          <FlashMessage position="top" titleStyle={styles.centerText} />
+        </NavigationContainer>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 };
 

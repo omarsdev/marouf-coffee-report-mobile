@@ -11,8 +11,7 @@ import {
   Image,
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
-import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
-import mime from 'mime';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
@@ -45,7 +44,6 @@ const AddTicketsScreen = () => {
   const {user, refetchUser} = useAuthStore();
 
   const [loading, setLoading] = useState(false);
-  const [image, setImage] = useState(false);
 
   const {data: branchesData, isLoading: branchesLoading} = useQuery({
     queryFn: branchesAPI.get,
