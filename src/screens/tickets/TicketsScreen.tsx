@@ -30,6 +30,8 @@ const TicketsScreen = () => {
   const {selectedBranch} = useDateStore();
   const {user, refetchUser, isAreaManager} = useAuthStore();
 
+  const isCheckedIn = isAreaManager && user?.current_branch && user?.active;
+
   const [query, setQuery] = useState({
     status: null,
     department: null,
@@ -207,7 +209,7 @@ const TicketsScreen = () => {
         <TouchableOpacity
           className={twMerge(
             'h-24 w-24 rounded-full bg-black justify-center items-center absolute right-0',
-            isAreaManager ? 'bottom-20' : 'bottom-0',
+            isCheckedIn ? 'bottom-20' : 'bottom-0',
           )}
           onPress={onCreateTicketNavigation}>
           <Ionicons name="add" color="white" size={48} />
