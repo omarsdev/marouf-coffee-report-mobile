@@ -41,7 +41,7 @@ const AddTicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {selectedBranch} = useDateStore();
-  const {user, refetchUser} = useAuthStore();
+  const {user, refetchUser, isAreaManager} = useAuthStore();
 
   const [loading, setLoading] = useState(false);
 
@@ -151,6 +151,8 @@ const AddTicketsScreen = () => {
     }
   };
 
+  // TODO Add api to get the area managers
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ContainerComponents>
@@ -161,31 +163,51 @@ const AddTicketsScreen = () => {
               Add New Ticket
             </Text>
             <View className="gap-9">
-              <View>
-                <Text className="mb-3 font-poppins font-normal leading-6 text-left">
-                  Add Department
-                </Text>
-                <CustomDropdown
-                  data={departmentsData}
-                  placeholder="Choose an option"
-                  value={data.department}
-                  onChange={value =>
-                    setData(old => ({...old, department: value}))
-                  }
-                />
-              </View>
+              {isAreaManager ? (
+                <>
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      Add Department
+                    </Text>
+                    <CustomDropdown
+                      data={departmentsData}
+                      placeholder="Choose an option"
+                      value={data.department}
+                      onChange={value =>
+                        setData(old => ({...old, department: value}))
+                      }
+                    />
+                  </View>
 
-              <View>
-                <Text className="mb-3 font-poppins font-normal leading-6 text-left">
-                  Pickup branches
-                </Text>
-                <CustomDropdown
-                  data={branchesData}
-                  placeholder="Choose an option"
-                  value={data.branch}
-                  onChange={value => setData(old => ({...old, branch: value}))}
-                />
-              </View>
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      Pickup branches
+                    </Text>
+                    <CustomDropdown
+                      data={branchesData}
+                      placeholder="Choose an option"
+                      value={data.branch}
+                      onChange={value =>
+                        setData(old => ({...old, branch: value}))
+                      }
+                    />
+                  </View>
+                </>
+              ) : (
+                <View>
+                  <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                    Add area manager
+                  </Text>
+                  {/* <CustomDropdown
+                    data={branchesData}
+                    placeholder="Choose an option"
+                    value={data.branch}
+                    onChange={value =>
+                      setData(old => ({...old, branch: value}))
+                    }
+                  /> */}
+                </View>
+              )}
 
               <View>
                 <Text className="mb-3 font-poppins font-normal leading-6 text-left">
