@@ -23,6 +23,7 @@ import {getCurrentLocation} from '@/utils/location';
 import useDateStore from '@/store/useDateStore';
 import useAuthStore from '@/store/useAuth';
 import {branchesAPI} from '@/api/branches';
+import {userAPI} from '@/api/user';
 
 const TicketsScreen = () => {
   const navigation = useNavigation();
@@ -37,10 +38,17 @@ const TicketsScreen = () => {
     status: null,
     department: null,
     branch: null,
+    area_manager: null,
   });
 
   const {data, isLoading} = useQuery({
-    queryFn: () => ticketsAPI.get(query),
+    queryFn: () =>
+      ticketsAPI.get({
+        ...query,
+        ...(!isAreaManager && {
+          user: user?._id,
+        }),
+      }),
     queryKey: ['tickets', JSON.stringify(query)],
     subscribed: isFocused,
   });
@@ -61,6 +69,17 @@ const TicketsScreen = () => {
     queryKey: ['branches'],
     select: data => {
       return data?.branches?.map(e => ({
+        label: e?.name?.en,
+        value: e?._id,
+      }));
+    },
+  });
+  const {data: areaManagersData, isLoading: areaManagersLoading} = useQuery({
+    queryFn: userAPI.areaManagers,
+    queryKey: ['areaManagers'],
+    subscribed: isFocused,
+    select: data => {
+      return data?.users?.map(e => ({
         label: e?.name?.en,
         value: e?._id,
       }));
@@ -110,43 +129,68 @@ const TicketsScreen = () => {
   return (
     <ContainerComponents className="relative">
       <HeaderComponents />
-      <CustomLoadingProvider loading={departmentsLoading || branchesLoading}>
+      <CustomLoadingProvider
+        loading={departmentsLoading || branchesLoading || areaManagersLoading}>
         <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
           Tickets list
         </Text>
         <View className="flex-row gap-5 mb-4">
-          <View className="flex-1">
-            <Text className="font-poppins font-normal leading-6 text-left text-lg">
-              Department
-            </Text>
-            <CustomDropdown
-              data={departmentsData}
-              placeholder="All"
-              value={query.department}
-              onChange={value =>
-                setQuery(old => ({
-                  ...old,
-                  department: old.department === value ? null : value,
-                }))
-              }
-            />
-          </View>
-          <View className="flex-1">
-            <Text className="font-poppins font-normal leading-6 text-left text-lg">
-              Branch
-            </Text>
-            <CustomDropdown
-              data={branchesData}
-              placeholder="All"
-              value={query.branch}
-              onChange={value =>
-                setQuery(old => ({
-                  ...old,
-                  branch: old.branch === value ? null : value,
-                }))
-              }
-            />
-          </View>
+          {isAreaManager ? (
+            <>
+              <View className="flex-1">
+                <Text className="font-poppins font-normal leading-6 text-left text-lg mb-2">
+                  Department
+                </Text>
+                <CustomDropdown
+                  data={departmentsData}
+                  placeholder="All"
+                  value={query.department}
+                  onChange={value =>
+                    setQuery(old => ({
+                      ...old,
+                      department: old.department === value ? null : value,
+                    }))
+                  }
+                />
+              </View>
+              <View className="flex-1">
+                <Text className="font-poppins font-normal leading-6 text-left text-lg mb-2">
+                  Branch
+                </Text>
+                <CustomDropdown
+                  data={branchesData}
+                  placeholder="All"
+                  value={query.branch}
+                  onChange={value =>
+                    setQuery(old => ({
+                      ...old,
+                      branch: old.branch === value ? null : value,
+                    }))
+                  }
+                />
+              </View>
+            </>
+          ) : (
+            <>
+              <View className="flex-1">
+                <Text className="font-poppins font-normal leading-6 text-left text-lg mb-2">
+                  Area Manager
+                </Text>
+                <CustomDropdown
+                  data={areaManagersData}
+                  placeholder="All"
+                  value={query.area_manager}
+                  onChange={value =>
+                    setQuery(old => ({
+                      ...old,
+                      area_manager: old.area_manager === value ? null : value,
+                    }))
+                  }
+                />
+              </View>
+              <View className="flex-1" />
+            </>
+          )}
         </View>
         <View className="self-end">
           <View className="flex-row gap-3">
