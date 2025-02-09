@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, ScrollView} from 'react-native';
+import {View, Text, ScrollView, TouchableOpacity} from 'react-native';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
@@ -25,6 +25,12 @@ const PreviousReportsScreen = () => {
 
   const onNextNavigation = () => navigation.navigate('TicketsScreen');
 
+  const onViewHandler = id => {
+    navigation.navigate('PreviousReportsInfoScreen', {
+      assignmentId: id,
+    });
+  };
+
   return (
     <ContainerComponents>
       <HeaderComponents />
@@ -35,7 +41,8 @@ const PreviousReportsScreen = () => {
           </Text>
           <View>
             {data?.assignments?.map((assignment, i) => (
-              <View
+              <TouchableOpacity
+                onPress={() => onViewHandler(assignment?._id)}
                 className="py-3 px-5 border-black border-[1px] rounded-2xl my-3"
                 key={i}>
                 <View className="flex-row gap-6 items-center">
@@ -58,7 +65,7 @@ const PreviousReportsScreen = () => {
                     {assignment?.reportId?.description}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </View>
           <CustomButton title="Next" onPress={onNextNavigation} />
