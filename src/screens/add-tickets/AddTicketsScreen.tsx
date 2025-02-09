@@ -33,7 +33,7 @@ const AddTicketsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {isAreaManager, user} = useAuthStore();
-  const {defaultTickets, setTickets, tickets} = useTicketsStore();
+  const {defaultTickets, setTickets, tickets, reset} = useTicketsStore();
 
   const [loading, setLoading] = useState(false);
 
@@ -79,11 +79,16 @@ const AddTicketsScreen = () => {
     try {
       const res = await ticketsAPI.create({
         ...data,
-        ...(!isAreaManager && {
-          branch: user?.branch_access,
-          department: undefined,
-        }),
+        ...(!isAreaManager
+          ? {
+              branch: user?.branch_access,
+              department: undefined,
+            }
+          : {
+              area_manager: undefined,
+            }),
       });
+      reset();
       navigation.goBack();
     } catch (error) {
       console.error(error);
