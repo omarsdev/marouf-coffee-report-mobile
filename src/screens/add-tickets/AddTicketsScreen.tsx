@@ -337,6 +337,9 @@ const AddTicketsScreen = () => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View className="flex-row gap-3">
                     <TouchableOpacity
+                      style={
+                        isEditable && data.priority !== 0 && {display: 'none'}
+                      }
                       disabled={isEditable}
                       onPress={() => onPriorityLevel(0)}
                       className={twMerge(
@@ -348,6 +351,9 @@ const AddTicketsScreen = () => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      style={
+                        isEditable && data.priority !== 1 && {display: 'none'}
+                      }
                       disabled={isEditable}
                       onPress={() => onPriorityLevel(1)}
                       className={twMerge(
@@ -359,6 +365,9 @@ const AddTicketsScreen = () => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
+                      style={
+                        isEditable && data.priority !== 2 && {display: 'none'}
+                      }
                       disabled={isEditable}
                       onPress={() => onPriorityLevel(2)}
                       className={twMerge(
@@ -374,6 +383,7 @@ const AddTicketsScreen = () => {
               </View>
 
               <TouchableOpacity
+                disabled={isEditable}
                 onPress={onUploadImage}
                 className="bg-[#0000000F] h-24 border-[1px] border-black rounded-3xl justify-center items-center">
                 <View className="flex-row items-center gap-3">

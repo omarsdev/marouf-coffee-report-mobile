@@ -58,6 +58,7 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
       value={value}
       onChange={(item: DropdownItem) => onChange(item.value)}
       renderItem={renderItem}
+      renderRightIcon={disable ? () => null : undefined}
     />
   );
 };
