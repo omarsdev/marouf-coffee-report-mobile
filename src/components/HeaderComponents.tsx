@@ -111,14 +111,12 @@ const HeaderComponents = () => {
     onPressFunc: onLogoutHandler,
   };
 
-  const headersData = useMemo(
-    () => [
-      ...(isAreaManager
-        ? data
-        : data.filter(e => e.screenName !== 'ChooseBranchScreen')),
-    ],
-    [isAreaManager],
-  );
+  const headersData = useMemo(() => {
+    if (isAreaManager) return data;
+    return data.filter(
+      e => !['ChooseBranchScreen', 'TasksScreen'].includes(e.screenName),
+    );
+  }, [isAreaManager, data]);
 
   return (
     <View className="relative">
