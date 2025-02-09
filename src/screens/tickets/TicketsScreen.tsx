@@ -22,6 +22,7 @@ import {request} from 'react-native-permissions';
 import {getCurrentLocation} from '@/utils/location';
 import useDateStore from '@/store/useDateStore';
 import useAuthStore from '@/store/useAuth';
+import {branchesAPI} from '@/api/branches';
 
 const TicketsScreen = () => {
   const navigation = useNavigation();
@@ -35,6 +36,7 @@ const TicketsScreen = () => {
   const [query, setQuery] = useState({
     status: null,
     department: null,
+    branch: null,
   });
 
   const {data, isLoading} = useQuery({
@@ -52,6 +54,17 @@ const TicketsScreen = () => {
       }));
     },
     subscribed: isFocused,
+  });
+  const {data: branchesData, isLoading: branchesLoading} = useQuery({
+    queryFn: branchesAPI.get,
+    subscribed: isFocused,
+    queryKey: ['branches'],
+    select: data => {
+      return data?.branches?.map(e => ({
+        label: e?.name?.en,
+        value: e?._id,
+      }));
+    },
   });
 
   const onCheckoutHandler = async () => {
@@ -97,13 +110,13 @@ const TicketsScreen = () => {
   return (
     <ContainerComponents className="relative">
       <HeaderComponents />
-      <CustomLoadingProvider loading={departmentsLoading}>
+      <CustomLoadingProvider loading={departmentsLoading || branchesLoading}>
         <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
           Tickets list
         </Text>
-        <View className="flex-row justify-between">
-          <View>
-            <Text className="font-poppins font-normal leading-6 text-left">
+        <View className="flex-row gap-5 mb-4">
+          <View className="flex-1">
+            <Text className="font-poppins font-normal leading-6 text-left text-lg">
               Department
             </Text>
             <CustomDropdown
@@ -118,50 +131,65 @@ const TicketsScreen = () => {
               }
             />
           </View>
-
-          <View className="self-end">
-            <View className="flex-row gap-3">
-              <TouchableOpacity
-                className={twMerge(
-                  'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
-                  query.status === 1 && 'bg-slate-300',
-                )}
-                onPress={() =>
-                  setQuery(old => ({
-                    ...old,
-                    status: old?.status === 1 ? null : 1,
-                  }))
-                }>
-                <Text className="font-poppins font-normal leading-6 text-left">
-                  Complete
+          <View className="flex-1">
+            <Text className="font-poppins font-normal leading-6 text-left text-lg">
+              Branch
+            </Text>
+            <CustomDropdown
+              data={branchesData}
+              placeholder="All"
+              value={query.branch}
+              onChange={value =>
+                setQuery(old => ({
+                  ...old,
+                  branch: old.branch === value ? null : value,
+                }))
+              }
+            />
+          </View>
+        </View>
+        <View className="self-end">
+          <View className="flex-row gap-3">
+            <TouchableOpacity
+              className={twMerge(
+                'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
+                query.status === 1 && 'bg-slate-300',
+              )}
+              onPress={() =>
+                setQuery(old => ({
+                  ...old,
+                  status: old?.status === 1 ? null : 1,
+                }))
+              }>
+              <Text className="font-poppins font-normal leading-6 text-left">
+                Complete
+              </Text>
+              <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center">
+                <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                  {numberOfCompleted}
                 </Text>
-                <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center">
-                  <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
-                    {numberOfCompleted}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className={twMerge(
-                  'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
-                  query.status === 0 && 'bg-slate-300',
-                )}
-                onPress={() =>
-                  setQuery(old => ({
-                    ...old,
-                    status: old?.status === 0 ? null : 0,
-                  }))
-                }>
-                <Text className="font-poppins font-normal leading-6 text-left">
-                  To DO
+              </View>
+            </TouchableOpacity>
+            <TouchableOpacity
+              className={twMerge(
+                'flex-row rounded-3xl border-[1px] border-black px-3 py-2 gap-3',
+                query.status === 0 && 'bg-slate-300',
+              )}
+              onPress={() =>
+                setQuery(old => ({
+                  ...old,
+                  status: old?.status === 0 ? null : 0,
+                }))
+              }>
+              <Text className="font-poppins font-normal leading-6 text-left">
+                To DO
+              </Text>
+              <View className="bg-[#BF7C00] px-2 rounded-3xl justify-center items-center">
+                <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                  {numberOfInProgress}
                 </Text>
-                <View className="bg-[#BF7C00] px-2 rounded-3xl justify-center items-center">
-                  <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
-                    {numberOfInProgress}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
           </View>
         </View>
         <CustomLoadingProvider loading={isLoading}>
