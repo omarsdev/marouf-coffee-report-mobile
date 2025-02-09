@@ -18,6 +18,12 @@ import {getCurrentLocation} from '@/utils/location';
 
 const data = [
   {
+    label: 'Tasks',
+    icon: <Feather name="info" color="black" size={20} />,
+    value: '1',
+    screenName: 'TasksScreen',
+  },
+  {
     label: 'Schedule',
     icon: <Ionicons name="calendar" color="black" size={20} />,
     value: '2',
@@ -92,7 +98,9 @@ const HeaderComponents = () => {
         resetDateStore();
         resetAuthStore();
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const logoutHeader = {

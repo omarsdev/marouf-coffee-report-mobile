@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import {
   View,
   Text,
@@ -16,7 +16,7 @@ import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
 import CustomButton from '@/components/custom/CustomButton';
 import {normalize} from '@/utils';
-import {useIsFocused, useNavigation} from '@react-navigation/native';
+import {useIsFocused, useNavigation, useRoute} from '@react-navigation/native';
 import {twMerge} from 'tailwind-merge';
 import {ticketsAPI} from '@/api/tickets';
 import {useQuery} from '@tanstack/react-query';
@@ -30,12 +30,22 @@ import {ActivityIndicator} from 'react-native';
 import useTicketsStore from '@/store/useTickets';
 
 const AddTicketsScreen = () => {
+  const {params} = useRoute();
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {isAreaManager, user} = useAuthStore();
   const {defaultTickets, setTickets, tickets, reset} = useTicketsStore();
 
   const [loading, setLoading] = useState(false);
+
+  const isEditable = useMemo(() => !!params?.ticketId, [params?.ticketId]);
+
+  const {data: ticketData, isLoading: ticketLoading} = useQuery({
+    queryFn: () => ticketsAPI.getById(params?.ticketId),
+    queryKey: ['ticket' + params?.ticketId],
+    subscribed: isFocused,
+    enabled: isEditable,
+  });
 
   const {data: branchesData, isLoading: branchesLoading} = useQuery({
     queryFn: branchesAPI.get,
@@ -76,6 +86,9 @@ const AddTicketsScreen = () => {
   const [data, setData] = useState(tickets || defaultTickets);
 
   const onAddTicket = async () => {
+    if (isEditable) {
+      return navigation.goBack();
+    }
     try {
       const res = await ticketsAPI.create({
         ...data,
@@ -134,13 +147,32 @@ const AddTicketsScreen = () => {
     }
   };
 
-  useEffect(() => {
-    setTickets(tickets || defaultTickets);
-  }, []);
+  const onPriorityLevel = element => {
+    setData(old => ({
+      ...old,
+      priority: old.priority === element ? null : element,
+    }));
+  };
 
   useEffect(() => {
+    if (isEditable) {
+      return;
+    }
+    setTickets(tickets || defaultTickets);
+  }, [isEditable]);
+
+  useEffect(() => {
+    if (isEditable) {
+      return;
+    }
     setTickets(data);
-  }, [data]);
+  }, [data, isEditable]);
+
+  useEffect(() => {
+    if (isEditable && ticketData) {
+      setData(ticketData?.ticket);
+    }
+  }, [ticketData, isEditable]);
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -148,20 +180,71 @@ const AddTicketsScreen = () => {
         <HeaderComponents />
         <CustomLoadingProvider
           loading={
-            branchesLoading || departmentsLoading || areaManagersLoading
+            branchesLoading ||
+            departmentsLoading ||
+            areaManagersLoading ||
+            ticketLoading
           }>
           <ScrollView showsVerticalScrollIndicator={false}>
             <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
-              Add New Ticket
+              {isEditable ? 'Ticket' : 'Add New Ticket'}
             </Text>
             <View className="gap-9">
-              {isAreaManager ? (
+              {isEditable ? (
                 <>
                   <View>
                     <Text className="mb-3 font-poppins font-normal leading-6 text-left">
-                      Add Department
+                      {isEditable ? 'Department' : 'Add Department'}
                     </Text>
                     <CustomDropdown
+                      disable={isEditable}
+                      data={departmentsData}
+                      placeholder={'Not Selected ❌'}
+                      value={data.department}
+                      onChange={value =>
+                        setData(old => ({...old, department: value}))
+                      }
+                    />
+                  </View>
+
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      {isEditable ? 'Branch' : 'Pickup Branch'}
+                    </Text>
+                    <CustomDropdown
+                      disable={isEditable}
+                      data={branchesData}
+                      placeholder={'Not Selected ❌'}
+                      value={data.branch}
+                      onChange={value =>
+                        setData(old => ({...old, branch: value}))
+                      }
+                    />
+                  </View>
+
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      {isEditable ? 'Area manager' : 'Add area manager'}
+                    </Text>
+                    <CustomDropdown
+                      disable={isEditable}
+                      data={areaManagersData}
+                      placeholder={'Not Selected ❌'}
+                      value={data.area_manager}
+                      onChange={value =>
+                        setData(old => ({...old, area_manager: value}))
+                      }
+                    />
+                  </View>
+                </>
+              ) : isAreaManager ? (
+                <>
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      {isEditable ? 'Department' : 'Add Department'}
+                    </Text>
+                    <CustomDropdown
+                      disable={isEditable}
                       data={departmentsData}
                       placeholder="Choose an option"
                       value={data.department}
@@ -173,9 +256,10 @@ const AddTicketsScreen = () => {
 
                   <View>
                     <Text className="mb-3 font-poppins font-normal leading-6 text-left">
-                      Pickup branches
+                      {isEditable ? 'Branch' : 'Pickup Branch'}
                     </Text>
                     <CustomDropdown
+                      disable={isEditable}
                       data={branchesData}
                       placeholder="Choose an option"
                       value={data.branch}
@@ -188,9 +272,10 @@ const AddTicketsScreen = () => {
               ) : (
                 <View>
                   <Text className="mb-3 font-poppins font-normal leading-6 text-left">
-                    Add area manager
+                    {isEditable ? 'Area manager' : 'Add area manager'}
                   </Text>
                   <CustomDropdown
+                    disable={isEditable}
                     data={areaManagersData}
                     placeholder="Choose an option"
                     value={data.area_manager}
@@ -206,6 +291,7 @@ const AddTicketsScreen = () => {
                   Ticket Title
                 </Text>
                 <TextInput
+                  editable={!isEditable}
                   className="border-[1px] rounded-[50px]"
                   placeholder="Write Name of Ticket here"
                   value={data.ticket_title}
@@ -226,6 +312,7 @@ const AddTicketsScreen = () => {
                   Description
                 </Text>
                 <TextInput
+                  editable={!isEditable}
                   value={data.ticket_description}
                   onChangeText={text =>
                     setData(old => ({...old, ticket_description: text}))
@@ -250,12 +337,8 @@ const AddTicketsScreen = () => {
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   <View className="flex-row gap-3">
                     <TouchableOpacity
-                      onPress={() =>
-                        setData(old => ({
-                          ...old,
-                          priority: old.priority === 0 ? null : 0,
-                        }))
-                      }
+                      disabled={isEditable}
+                      onPress={() => onPriorityLevel(0)}
                       className={twMerge(
                         'py-2 px-10 bg-[#CBFFD8] rounded-3xl',
                         data.priority === 0 && 'border-black border-[1px]',
@@ -265,12 +348,8 @@ const AddTicketsScreen = () => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() =>
-                        setData(old => ({
-                          ...old,
-                          priority: old.priority === 1 ? null : 1,
-                        }))
-                      }
+                      disabled={isEditable}
+                      onPress={() => onPriorityLevel(1)}
                       className={twMerge(
                         'py-2 px-10 bg-[#FFFACB] rounded-3xl',
                         data.priority === 1 && 'border-black border-[1px]',
@@ -280,12 +359,8 @@ const AddTicketsScreen = () => {
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={() =>
-                        setData(old => ({
-                          ...old,
-                          priority: old.priority === 2 ? null : 2,
-                        }))
-                      }
+                      disabled={isEditable}
+                      onPress={() => onPriorityLevel(2)}
                       className={twMerge(
                         'py-2 px-10 bg-[#FFCBCB] rounded-3xl',
                         data.priority === 2 && 'border-black border-[1px]',
@@ -313,9 +388,11 @@ const AddTicketsScreen = () => {
                     />
                   ) : (
                     <>
-                      <Entypo name="attachment" size={normalize(17)} />
+                      {!isEditable && (
+                        <Entypo name="attachment" size={normalize(17)} />
+                      )}
                       <Text className="text-lg font-normal leading-6 text-left underline">
-                        Attach Image
+                        {isEditable ? 'No Image' : 'Attach Image'}
                       </Text>
                     </>
                   )}
@@ -323,7 +400,7 @@ const AddTicketsScreen = () => {
               </TouchableOpacity>
               <CustomButton
                 className="flex-1"
-                title="Add Tickets"
+                title={isEditable ? 'Back' : 'Add Tickets'}
                 onPress={onAddTicket}
               />
             </View>

@@ -4,5 +4,8 @@ export const ticketsAPI = {
   get: async (query: any) => {
     return HttpCall('/tickets' + buildQueryParams(query));
   },
+  getById: async (ticketId: string) => {
+    return HttpCall('/tickets/' + ticketId);
+  },
   create: async (body: any) => HttpCall('/tickets', 'POST', body),
 };

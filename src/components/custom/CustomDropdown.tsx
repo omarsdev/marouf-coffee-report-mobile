@@ -13,6 +13,7 @@ interface DropdownComponentProps {
   value: string | number | null;
   onChange: (value: string | number) => void;
   placeholder?: string;
+  disable?: boolean;
 }
 
 const DropdownComponent: React.FC<DropdownComponentProps> = ({
@@ -20,6 +21,7 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
   value,
   onChange,
   placeholder = 'Select an option',
+  disable = false,
 }) => {
   // Memoized Render Item for Performance Optimization
   const renderItem = useCallback(
@@ -41,6 +43,7 @@ const DropdownComponent: React.FC<DropdownComponentProps> = ({
 
   return (
     <Dropdown
+      disable={disable}
       style={styles.dropdown}
       placeholderStyle={styles.placeholderStyle}
       selectedTextStyle={styles.selectedTextStyle}

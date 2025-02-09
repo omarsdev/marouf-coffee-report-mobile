@@ -83,6 +83,11 @@ const TicketsScreen = () => {
   const onCreateTicketNavigation = () => {
     return navigation.navigate('AddTicketsScreen');
   };
+  const onTicketNavigation = ticketId => {
+    return navigation.navigate('AddTicketsScreen', {
+      ticketId,
+    });
+  };
 
   const numberOfInProgress =
     data?.tickets?.filter(e => e?.status === 0)?.length || 0;
@@ -162,7 +167,8 @@ const TicketsScreen = () => {
         <CustomLoadingProvider loading={isLoading}>
           <ScrollView showsVerticalScrollIndicator={false}>
             {data?.tickets?.map((ticket, i) => (
-              <View
+              <TouchableOpacity
+                onPress={() => onTicketNavigation(ticket?._id)}
                 className="py-3 px-5 border-black border-[1px] rounded-2xl my-3"
                 key={i}>
                 <View className="flex-row gap-6 items-center">
@@ -199,7 +205,7 @@ const TicketsScreen = () => {
                     {ticket?.ticket_description}
                   </Text>
                 </View>
-              </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </CustomLoadingProvider>

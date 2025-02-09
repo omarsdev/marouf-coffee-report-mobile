@@ -18,23 +18,32 @@ import {userAPI} from '@/api/user';
 import {branchesAPI} from '@/api/branches';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import ReportScreen from '@/screens/report/ReportScreen';
+import PreviousReportsInfoScreen from '@/screens/previous-reports/PreviousReportsInfoScreen';
+import TasksScreen from '@/screens/tasks/TasksScreen';
 
 const Stack = createNativeStackNavigator();
 
 const MainStack = () => {
   const [loading, setLoading] = useState(true);
-  const {token, _hasHydrated, setUser, user} = useAuthStore();
-  const {setSelectedBranchBranch} = useDateStore();
+  const {token, _hasHydrated, setUser, user, resetAuthStore} = useAuthStore();
+  const {setSelectedBranchBranch, resetDateStore} = useDateStore();
 
   // Function to Fetch User Data
   const fetchUser = useCallback(async () => {
     try {
       const res = await userAPI.me();
-      if (res?.current_branch && res?.active) {
-        const branch = await branchesAPI.getById(res?.current_branch);
-        setSelectedBranchBranch(branch?.branch);
+      if (!res) {
+        resetDateStore();
+        resetAuthStore();
+      } else {
+        if (res?.current_branch && res?.active) {
+          const branch = await branchesAPI.getById(res?.current_branch);
+          setSelectedBranchBranch(branch?.branch);
+        }
+        setUser(res);
       }
-      setUser(res);
+    } catch (error) {
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -78,6 +87,11 @@ const MainStack = () => {
         />
         <Stack.Screen name="TicketsScreen" component={TicketsScreen} />
         <Stack.Screen name="AddTicketsScreen" component={AddTicketsScreen} />
+        <Stack.Screen
+          name="PreviousReportsInfoScreen"
+          component={PreviousReportsInfoScreen}
+        />
+        <Stack.Screen name="TasksScreen" component={TasksScreen} />
       </Stack.Navigator>
     </CustomLoadingProvider>
   );
