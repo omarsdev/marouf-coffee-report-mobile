@@ -27,7 +27,8 @@ const authStore: StateCreator<AuthStore> = (set, get) => ({
     }
   },
   setToken: (token: string) => set({token}),
-  setUser: (user: any) => set({user, isAreaManager: user?.role === 2}),
+  setUser: (user: any) =>
+    set({user, isAreaManager: user?.role === 2 || user?.role_type === 'QC'}),
   refetchUser: async () => {
     const res = (await userAPI.me()) as any;
     set({user: res});
