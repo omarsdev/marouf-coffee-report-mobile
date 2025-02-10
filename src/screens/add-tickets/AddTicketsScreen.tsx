@@ -28,6 +28,7 @@ import useAuthStore from '@/store/useAuth';
 import {userAPI} from '@/api/user';
 import {ActivityIndicator} from 'react-native';
 import useTicketsStore from '@/store/useTickets';
+import FullScreenImageModal from '@/components/FullScreenImageModal';
 
 const AddTicketsScreen = () => {
   const {params} = useRoute();
@@ -317,7 +318,10 @@ const AddTicketsScreen = () => {
                   onChangeText={text =>
                     setData(old => ({...old, ticket_description: text}))
                   }
-                  className="border-[1px] rounded-3xl h-32"
+                  className={twMerge(
+                    'border-[1px] rounded-3xl',
+                    !isEditable && 'h-32',
+                  )}
                   placeholder="Write description here"
                   numberOfLines={3}
                   multiline
@@ -390,10 +394,8 @@ const AddTicketsScreen = () => {
                   {loading ? (
                     <ActivityIndicator />
                   ) : data?.ticket_images?.[0] ? (
-                    <Image
-                      source={{
-                        uri: data?.ticket_images?.[0],
-                      }}
+                    <FullScreenImageModal
+                      uri={data?.ticket_images?.[0]}
                       className="flex-1 h-24 rounded-3xl"
                     />
                   ) : (
