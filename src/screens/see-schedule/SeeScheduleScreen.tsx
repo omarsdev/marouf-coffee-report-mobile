@@ -131,42 +131,47 @@ const SeeScheduleScreen = () => {
               </TouchableOpacity>
             )}
           </View>
-          <View className="gap-8 pt-6">
-            {branches?.map((branch, i) => (
-              <View className="relative" key={branch?.index}>
-                <View className="absolute w-[3px] h-full left-0 z-10 py-[10px]">
-                  <View
-                    className={twMerge('flex-1 rounded-r-xl', bgColor1[i % 3])}
-                  />
-                </View>
-                <View
-                  className={twMerge(
-                    'p-4 rounded-xl flex-row justify-between',
-                    colors[i % 3],
-                  )}>
-                  <Text
-                    className="font-poppins"
-                    style={{fontSize: normalize(18)}}>
-                    {branch.name}
-                  </Text>
-                  <TouchableOpacity
-                    onPress={() => onCheckBranch(branch?.index)}>
+          {isAreaManager && (
+            <View className="gap-8 pt-6">
+              {branches?.map((branch, i) => (
+                <View className="relative" key={branch?.index}>
+                  <View className="absolute w-[3px] h-full left-0 z-10 py-[10px]">
                     <View
                       className={twMerge(
-                        'h-6 w-6 border-2 justify-center items-center',
-                        borderColor1[i % 3],
-                        chosenBranches?.index === branch?.index &&
-                          bgColor1[i % 3],
-                      )}>
-                      {chosenBranches?.index === branch?.index && (
-                        <Feather name="check" size={13} color="white" />
+                        'flex-1 rounded-r-xl',
+                        bgColor1[i % 3],
                       )}
-                    </View>
-                  </TouchableOpacity>
+                    />
+                  </View>
+                  <View
+                    className={twMerge(
+                      'p-4 rounded-xl flex-row justify-between',
+                      colors[i % 3],
+                    )}>
+                    <Text
+                      className="font-poppins"
+                      style={{fontSize: normalize(18)}}>
+                      {branch.name}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => onCheckBranch(branch?.index)}>
+                      <View
+                        className={twMerge(
+                          'h-6 w-6 border-2 justify-center items-center',
+                          borderColor1[i % 3],
+                          chosenBranches?.index === branch?.index &&
+                            bgColor1[i % 3],
+                        )}>
+                        {chosenBranches?.index === branch?.index && (
+                          <Feather name="check" size={13} color="white" />
+                        )}
+                      </View>
+                    </TouchableOpacity>
+                  </View>
                 </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          )}
         </ScrollView>
         <CustomButton
           disabled={!isAreaManager ? false : !chosenBranches ? true : false}
