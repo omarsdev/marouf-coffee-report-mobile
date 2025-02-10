@@ -31,6 +31,8 @@ const PreviousReportsScreen = () => {
     });
   };
 
+  console.log(data?.assignments);
+
   return (
     <ContainerComponents>
       <HeaderComponents />
@@ -56,7 +58,7 @@ const PreviousReportsScreen = () => {
                       {assignment?.reportId?.title}
                     </Text>
                     <Text className="font-poppins text-lg font-medium leading-6 text-left text-[#4F4F4F]">
-                      {format(new Date(assignment?.created_at), 'dd/MM/yyyy')}
+                      {format(new Date(assignment?.dueDate), 'dd/MM/yyyy')}
                     </Text>
                   </View>
                 </View>
