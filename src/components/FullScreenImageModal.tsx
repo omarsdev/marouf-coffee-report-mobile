@@ -4,7 +4,6 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const FullScreenImageModal = ({uri, className}) => {
   const [visible, setVisible] = useState(false);
-  console.log(uri);
 
   return (
     <>
