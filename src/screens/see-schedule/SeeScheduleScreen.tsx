@@ -33,7 +33,8 @@ const SeeScheduleScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {date, selectedBranch, setSelectedBranchBranch} = useDateStore();
-  const {isAreaManager, refetchUser} = useAuthStore();
+  const {user, isAreaManager, refetchUser} = useAuthStore();
+  const isCheckedIn = user?.current_branch && user?.active;
 
   const [branches, setBranches] = useState([]);
 
@@ -94,6 +95,27 @@ const SeeScheduleScreen = () => {
     }
   };
 
+  const onCheckoutHandler = async () => {
+    try {
+      await Permission.request(
+        Platform.OS === 'ios'
+          ? 'ios.permission.LOCATION_WHEN_IN_USE'
+          : 'android.permission.ACCESS_FINE_LOCATION',
+      ).then(async () => {
+        const {latitude, longitude} = await getCurrentLocation();
+        const res = await checkAPI.out({
+          branch: selectedBranch?._id,
+          lat: latitude,
+          lng: longitude,
+        });
+        await refetchUser();
+        setSelectedBranchBranch('');
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     if (!data) return;
     setBranches(
@@ -104,6 +126,11 @@ const SeeScheduleScreen = () => {
       })),
     );
   }, [data]);
+
+  const isDisabled = useMemo(
+    () => (!isAreaManager ? false : !chosenBranches ? true : false),
+    [isAreaManager, chosenBranches],
+  );
 
   return (
     <ContainerComponents>
@@ -174,9 +201,9 @@ const SeeScheduleScreen = () => {
           )}
         </ScrollView>
         <CustomButton
-          disabled={!isAreaManager ? false : !chosenBranches ? true : false}
-          title="Check In"
-          onPress={onCheckInHandler}
+          disabled={isDisabled}
+          title={isDisabled || !isCheckedIn ? 'Check In' : 'Check out'}
+          onPress={!isCheckedIn ? onCheckInHandler : onCheckoutHandler}
           className="mt-5"
         />
       </CustomLoadingProvider>
