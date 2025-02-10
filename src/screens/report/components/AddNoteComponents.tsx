@@ -18,6 +18,7 @@ import {normalize} from '@/utils';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {userAPI} from '@/api/user';
 import CustomButton from '@/components/custom/CustomButton';
+import FullScreenImageModal from '@/components/FullScreenImageModal';
 
 const AddNoteComponent = forwardRef<BottomSheet, {}>((props, ref) => {
   const {selectedNote, setSelectedNote, body, onCreate} = props;
@@ -123,10 +124,8 @@ const AddNoteComponent = forwardRef<BottomSheet, {}>((props, ref) => {
               {loading ? (
                 <ActivityIndicator />
               ) : body?.[selectedNote?._id]?.note?.image ? (
-                <Image
-                  source={{
-                    uri: body?.[selectedNote?._id]?.note?.image,
-                  }}
+                <FullScreenImageModal
+                  uri={body?.[selectedNote?._id]?.note?.image}
                   className="flex-1 h-28 rounded-3xl"
                 />
               ) : (
