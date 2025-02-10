@@ -109,6 +109,13 @@ const AddTicketsScreen = () => {
     }
   };
 
+  const onCompleteTicketHandler = async () => {
+    try {
+      await ticketsAPI.updateStatus(params?.ticketId, 1);
+      navigation.goBack();
+    } catch (error) {}
+  };
+
   const onUploadImage = async () => {
     try {
       setLoading(true);
@@ -410,11 +417,20 @@ const AddTicketsScreen = () => {
                   )}
                 </View>
               </TouchableOpacity>
-              <CustomButton
-                className="flex-1"
-                title={isEditable ? 'Back' : 'Add Tickets'}
-                onPress={onAddTicket}
-              />
+              <View className="flex-row gap-4">
+                <CustomButton
+                  className="flex-1"
+                  title={isEditable ? 'Back' : 'Add Tickets'}
+                  onPress={onAddTicket}
+                />
+                {isAreaManager && isEditable && (
+                  <CustomButton
+                    title="Completed"
+                    className="flex-1 bg-[#00BF29]"
+                    onPress={onCompleteTicketHandler}
+                  />
+                )}
+              </View>
             </View>
           </ScrollView>
         </CustomLoadingProvider>

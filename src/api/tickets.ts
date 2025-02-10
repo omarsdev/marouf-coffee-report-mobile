@@ -8,4 +8,6 @@ export const ticketsAPI = {
     return HttpCall('/tickets/' + ticketId);
   },
   create: async (body: any) => HttpCall('/tickets', 'POST', body),
+  updateStatus: async (id: number, status: number) =>
+    HttpCall(`/tickets/${id}`, 'PUT', {status}),
 };
