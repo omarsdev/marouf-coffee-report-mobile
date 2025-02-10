@@ -92,7 +92,7 @@ const PreviousReportsInfoScreen = () => {
                           className={twMerge(
                             'px-3 py-[6px] rounded-3xl',
                             btn,
-                            answer === 'Yes' && 'border-[1px]',
+                            answer === 'Yes' && 'border-[2px]',
                           )}>
                           <Text
                             className="font-poppins font-normal"
@@ -104,7 +104,7 @@ const PreviousReportsInfoScreen = () => {
                           // onPress={() => onCreate('No', question)}
                           className={twMerge(
                             'bg-[#F9A3A3] px-3 py-[6px] rounded-3xl',
-                            answer === 'No' && 'border-[1px]',
+                            answer === 'No' && 'border-[2px]',
                           )}>
                           <Text
                             className="font-poppins font-normal"
@@ -119,7 +119,7 @@ const PreviousReportsInfoScreen = () => {
                           className={twMerge(
                             'px-3 py-[6px] rounded-3xl',
                             btn,
-                            note !== 'Empty' && 'border-[1px]',
+                            note !== 'Empty' && 'border-[2px]',
                           )}>
                           <Text
                             className="font-poppins font-normal"
