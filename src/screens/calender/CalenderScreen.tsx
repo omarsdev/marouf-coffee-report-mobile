@@ -14,17 +14,11 @@ const CalenderScreen = () => {
   const navigation = useNavigation();
 
   const {date} = useDateStore();
-  const {user, isAreaManager} = useAuthStore();
+  const {user} = useAuthStore();
   const isCheckedIn = user?.current_branch && user?.active;
 
   const onNextHandler = () => {
-    navigation.navigate(
-      isCheckedIn
-        ? 'HomeScreen'
-        : isAreaManager
-        ? 'SeeScheduleScreen'
-        : 'HomeScreen',
-    );
+    navigation.navigate(isCheckedIn ? 'HomeScreen' : 'SeeScheduleScreen');
   };
 
   return (

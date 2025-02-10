@@ -143,7 +143,7 @@ const AddNoteComponent = forwardRef<BottomSheet, {}>((props, ref) => {
           style={{marginBottom: 20 + bottom, marginTop: 20}}
           title="Save"
           onPress={onSubmitHandler}
-          disabled={!body?.[selectedNote?._id]?.note}
+          disabled={!body?.[selectedNote?._id]?.note || loading}
         />
       </BottomSheetView>
     </BottomSheet>

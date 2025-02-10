@@ -33,7 +33,7 @@ const SeeScheduleScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {date, selectedBranch, setSelectedBranchBranch} = useDateStore();
-  const {refetchUser} = useAuthStore();
+  const {isAreaManager, refetchUser} = useAuthStore();
 
   const [branches, setBranches] = useState([]);
 
@@ -121,13 +121,15 @@ const SeeScheduleScreen = () => {
               style={{fontSize: normalize(30)}}>
               This is your schedule for today
             </Text>
-            <TouchableOpacity onPress={onBranchesNavigation}>
-              <Text
-                className="font-poppinsLight underline"
-                style={{fontSize: normalize(25)}}>
-                See All Branches
-              </Text>
-            </TouchableOpacity>
+            {isAreaManager && (
+              <TouchableOpacity onPress={onBranchesNavigation}>
+                <Text
+                  className="font-poppinsLight underline"
+                  style={{fontSize: normalize(25)}}>
+                  See All Branches
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
           <View className="gap-8 pt-6">
             {branches?.map((branch, i) => (
@@ -165,13 +167,13 @@ const SeeScheduleScreen = () => {
               </View>
             ))}
           </View>
-          <CustomButton
-            disabled={!chosenBranches}
-            title="Check In"
-            onPress={onCheckInHandler}
-            className="mt-5"
-          />
         </ScrollView>
+        <CustomButton
+          disabled={!isAreaManager ? false : !chosenBranches ? true : false}
+          title="Check In"
+          onPress={onCheckInHandler}
+          className="mt-5"
+        />
       </CustomLoadingProvider>
     </ContainerComponents>
   );
