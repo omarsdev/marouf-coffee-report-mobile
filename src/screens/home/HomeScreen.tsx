@@ -14,6 +14,7 @@ import {useQuery} from '@tanstack/react-query';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {assignmentsAPI} from '@/api/assignments';
 import _ from 'lodash';
+import useAuthStore from '@/store/useAuth';
 
 const TASKS_COLORS = [
   {bg: 'bg-[#FFF5D5]', btn: 'bg-[#F9E5A3]'},
@@ -25,6 +26,7 @@ const TASKS_COLORS = [
 const HomeScreen = () => {
   const navigation = useNavigation();
   const {selectedBranch, date} = useDateStore();
+  const {isAreaManager} = useAuthStore();
   const isFocused = useIsFocused();
 
   const {data, isLoading} = useQuery({
@@ -108,7 +110,7 @@ const HomeScreen = () => {
           <CustomButton
             className="mt-7"
             title="Next"
-            disabled={data?.assignments?.length > 0}
+            disabled={!isAreaManager ? false : data?.assignments?.length > 0}
             onPress={onNextNavigate}
           />
         </ScrollView>
