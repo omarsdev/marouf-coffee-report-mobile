@@ -37,7 +37,7 @@ const TicketsScreen = () => {
   const [query, setQuery] = useState({
     status: null,
     department: null,
-    branch: null,
+    branch: user?.current_branch,
     area_manager: null,
   });
 
