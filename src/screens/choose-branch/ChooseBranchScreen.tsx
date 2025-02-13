@@ -84,7 +84,7 @@ const ChooseBranchScreen = () => {
     <ContainerComponents>
       <HeaderComponents />
       <CustomLoadingProvider loading={isLoading}>
-        <View className="gap-8 mt-8">
+        <View className="flex-1 gap-8 mt-8">
           <Text
             className="font-poppins text-2xl font-light leading-9 text-left right-0 flex justify-between items-center"
             style={{fontSize: normalize(25)}}>
@@ -106,7 +106,7 @@ const ChooseBranchScreen = () => {
             style={{fontSize: normalize(25)}}>
             Or Choose Manually
           </Text>
-          <ScrollView>
+          <ScrollView className="flex-grow">
             <View className="gap-3">
               {data?.branches.map((branch, i) => (
                 <TouchableOpacity
