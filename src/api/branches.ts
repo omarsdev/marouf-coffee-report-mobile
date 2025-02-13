@@ -1,11 +1,6 @@
-import useAuthStore from '@/store/useAuth';
 import {buildQueryParams, HttpCall} from './HttpCall';
 
 export const branchesAPI = {
-  get: async () =>
-    HttpCall(
-      '/branches' +
-        buildQueryParams({area_manager: useAuthStore.getState()?.user?._id}),
-    ),
+  get: async (opt: any) => HttpCall('/branches' + buildQueryParams(opt)),
   getById: async (id: string) => HttpCall('/branches/' + id),
 };

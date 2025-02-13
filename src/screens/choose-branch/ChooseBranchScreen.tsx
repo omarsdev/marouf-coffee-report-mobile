@@ -29,15 +29,16 @@ const ChooseBranchScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
   const {selectedBranch, setSelectedBranchBranch} = useDateStore();
-  const {user, refetchUser} = useAuthStore();
+  const {user, refetchUser, isAreaManager} = useAuthStore();
   const isCheckedIn = user?.current_branch && user?.active;
 
   const [filterBranch, setFilterBranch] = useState('');
 
   const {data, isLoading} = useQuery({
-    queryFn: branchesAPI.get,
+    queryFn: () => branchesAPI.get(isAreaManager && {areaManager: user?._id}),
     subscribed: isFocused,
     queryKey: ['branches'],
+    enabled: !!user?._id,
   });
 
   const onCheckInHandler = async () => {

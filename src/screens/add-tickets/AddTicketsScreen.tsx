@@ -49,9 +49,10 @@ const AddTicketsScreen = () => {
   });
 
   const {data: branchesData, isLoading: branchesLoading} = useQuery({
-    queryFn: branchesAPI.get,
+    queryFn: () => branchesAPI.get(isAreaManager && {areaManager: user?._id}),
     queryKey: ['branches'],
     subscribed: isFocused,
+    enabled: !!user?._id,
     select: data => {
       return data?.branches?.map(e => ({
         label: e?.name?.en,

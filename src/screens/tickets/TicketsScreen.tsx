@@ -41,17 +41,6 @@ const TicketsScreen = () => {
     area_manager: null,
   });
 
-  const {data, isLoading} = useQuery({
-    queryFn: () =>
-      ticketsAPI.get({
-        ...query,
-        ...(!isAreaManager && {
-          user: user?._id,
-        }),
-      }),
-    queryKey: ['tickets', JSON.stringify(query)],
-    subscribed: isFocused,
-  });
   const {data: departmentsData, isLoading: departmentsLoading} = useQuery({
     queryFn: departmentsAPI.get,
     queryKey: ['departments'],
@@ -63,10 +52,12 @@ const TicketsScreen = () => {
     },
     subscribed: isFocused,
   });
+
   const {data: branchesData, isLoading: branchesLoading} = useQuery({
-    queryFn: branchesAPI.get,
+    queryFn: () => branchesAPI.get(isAreaManager && {areaManager: user?._id}),
     subscribed: isFocused,
     queryKey: ['branches'],
+    enabled: !!user?._id,
     select: data => {
       return data?.branches?.map(e => ({
         label: e?.name?.en,
@@ -84,6 +75,22 @@ const TicketsScreen = () => {
         value: e?._id,
       }));
     },
+  });
+
+  const {data, isLoading} = useQuery({
+    queryFn: () =>
+      ticketsAPI.get({
+        ...query,
+        branches: query.branch
+          ? query.branch
+          : branchesData?.map(e => e.value).join(','),
+        ...(!isAreaManager && {
+          user: user?._id,
+        }),
+      }),
+    queryKey: ['tickets', JSON.stringify(query)],
+    subscribed: isFocused,
+    enabled: !!branchesData,
   });
 
   const onCheckoutHandler = async () => {

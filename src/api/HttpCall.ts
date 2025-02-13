@@ -70,7 +70,10 @@ export const buildQueryParams = paramsObject => {
     .filter(([_, value]) => value !== undefined && value !== null)
     .map(
       ([key, value]) =>
-        `${encodeURIComponent(key)}=${encodeURIComponent(value)}`,
+        `${encodeURIComponent(key)}=${encodeURIComponent(String(value)).replace(
+          /%2C/g,
+          ',',
+        )}`,
     )
     .join('&');
 
