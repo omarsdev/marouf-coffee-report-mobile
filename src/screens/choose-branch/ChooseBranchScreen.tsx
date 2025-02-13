@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -31,6 +31,8 @@ const ChooseBranchScreen = () => {
   const {selectedBranch, setSelectedBranchBranch} = useDateStore();
   const {user, refetchUser} = useAuthStore();
   const isCheckedIn = user?.current_branch && user?.active;
+
+  const [filterBranch, setFilterBranch] = useState('');
 
   const {data, isLoading} = useQuery({
     queryFn: branchesAPI.get,
@@ -97,6 +99,8 @@ const ChooseBranchScreen = () => {
               </View>
             </View>
             <TextInput
+              onChangeText={setFilterBranch}
+              value={filterBranch}
               className="relative bg-[#00000012] py-4 pl-10 pr-5 font-poppins text-base font-normal leading-6 text-left right-0 flex justify-between items-center rounded-[28px]"
               placeholder="Enter Branch Name"
             />
@@ -108,31 +112,33 @@ const ChooseBranchScreen = () => {
           </Text>
           <ScrollView className="flex-grow">
             <View className="gap-3">
-              {data?.branches.map((branch, i) => (
-                <TouchableOpacity
-                  onPress={() => setSelectedBranchBranch(branch)}
-                  className="px-4 py-2 bg-[#B9B9B91A] rounded-2xl justify-between flex-row items-center"
-                  key={i}>
-                  <View className="flex-row gap-4 items-center">
-                    <View className="w-10 h-10 rounded-full bg-[#FFF0D573] justify-center items-center">
-                      <Text className="font-poppins text-base font-medium leading-6 text-center">
-                        {branch?.name?.en?.[0]}
+              {data?.branches
+                ?.filter(branch => branch?.name?.en.includes(filterBranch))
+                ?.map((branch, i) => (
+                  <TouchableOpacity
+                    onPress={() => setSelectedBranchBranch(branch)}
+                    className="px-4 py-2 bg-[#B9B9B91A] rounded-2xl justify-between flex-row items-center"
+                    key={i}>
+                    <View className="flex-row gap-4 items-center">
+                      <View className="w-10 h-10 rounded-full bg-[#FFF0D573] justify-center items-center">
+                        <Text className="font-poppins text-base font-medium leading-6 text-center">
+                          {branch?.name?.en?.[0]}
+                        </Text>
+                      </View>
+                      <Text className="font-poppins text-base font-normal leading-6 text-left">
+                        {branch?.name?.en}
                       </Text>
                     </View>
-                    <Text className="font-poppins text-base font-normal leading-6 text-left">
-                      {branch?.name?.en}
-                    </Text>
-                  </View>
-                  <View>
-                    <View
-                      className={twMerge(
-                        'w-5 h-5 rounded-full border-black border-2',
-                        branch?._id === selectedBranch?._id && 'bg-black',
-                      )}
-                    />
-                  </View>
-                </TouchableOpacity>
-              ))}
+                    <View>
+                      <View
+                        className={twMerge(
+                          'w-5 h-5 rounded-full border-black border-2',
+                          branch?._id === selectedBranch?._id && 'bg-black',
+                        )}
+                      />
+                    </View>
+                  </TouchableOpacity>
+                ))}
             </View>
           </ScrollView>
           <CustomButton
