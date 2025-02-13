@@ -6,7 +6,7 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
-  Image,
+  Keyboard,
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import BottomSheet, {
@@ -85,6 +85,7 @@ const AddNoteComponent = forwardRef<BottomSheet, {}>((props, ref) => {
       index={-1}
       snapPoints={['90%']}
       enablePanDownToClose
+      onClose={Keyboard.dismiss}
       onChange={handleSheetChanges}>
       <BottomSheetView style={styles.contentContainer}>
         <Text
