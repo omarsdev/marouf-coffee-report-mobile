@@ -161,7 +161,10 @@ const SeeScheduleScreen = () => {
           {isAreaManager && (
             <View className="gap-8 pt-6">
               {branches?.map((branch, i) => (
-                <View className="relative" key={branch?.index}>
+                <TouchableOpacity
+                  className="relative"
+                  key={branch?.index}
+                  onPress={() => onCheckBranch(branch?.index)}>
                   <View className="absolute w-[3px] h-full left-0 z-10 py-[10px]">
                     <View
                       className={twMerge(
@@ -180,8 +183,7 @@ const SeeScheduleScreen = () => {
                       style={{fontSize: normalize(18)}}>
                       {branch.name}
                     </Text>
-                    <TouchableOpacity
-                      onPress={() => onCheckBranch(branch?.index)}>
+                    <View>
                       <View
                         className={twMerge(
                           'h-6 w-6 border-2 justify-center items-center',
@@ -193,9 +195,9 @@ const SeeScheduleScreen = () => {
                           <Feather name="check" size={13} color="white" />
                         )}
                       </View>
-                    </TouchableOpacity>
+                    </View>
                   </View>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           )}
