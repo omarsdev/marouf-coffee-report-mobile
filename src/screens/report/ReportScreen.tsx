@@ -176,11 +176,13 @@ const ReportScreen = () => {
                             </Text>
                           </TouchableOpacity>
                           <TouchableOpacity
+                            disabled={!answer}
                             onPress={() => onNotePressHandler(question)}
                             className={twMerge(
                               'px-3 py-[6px] rounded-3xl',
                               btn,
                               note && 'border-[1px]',
+                              !answer && 'opacity-50',
                             )}>
                             <Text
                               className="font-poppins font-normal"
