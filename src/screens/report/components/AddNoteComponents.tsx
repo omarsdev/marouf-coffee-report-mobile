@@ -43,7 +43,7 @@ const AddNoteComponent = forwardRef<BottomSheet, {}>((props, ref) => {
       });
 
       if (result.didCancel) {
-        console.log('User cancelled image selection');
+        console.error('User cancelled image selection');
         return;
       }
 
