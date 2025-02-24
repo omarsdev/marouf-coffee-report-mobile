@@ -22,6 +22,7 @@ import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {assignmentsAPI} from '@/api/assignments';
 import {submissionsAPI} from '@/api/submissions';
 import AddNoteComponents from './components/AddNoteComponents';
+import useReportsStore from '@/store/useTasks';
 
 const TASKS_COLORS = [
   {bg: 'bg-[#FFF5D5]', btn: 'bg-[#F9E5A3]'},
@@ -36,6 +37,7 @@ const ReportScreen = () => {
 
   const {selectedBranch} = useDateStore();
   const isFocused = useIsFocused();
+  const {setReports, reports, _hasHydrated} = useReportsStore();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
@@ -100,6 +102,24 @@ const ReportScreen = () => {
     }
     bottomSheetRef.current?.expand();
   });
+
+  useEffect(() => {
+    if (Object.keys(body).length === 0 || !_hasHydrated) {
+      return;
+    }
+    setReports(params?.assignmentId + selectedBranch?._id, body);
+  }, [body]);
+
+  useEffect(() => {
+    if (Object.keys(reports).length === 0 || Object.keys(body).length > 0) {
+      return;
+    }
+    if (!reports?.[params?.assignmentId + selectedBranch?._id]) {
+      return;
+    }
+
+    setBody(reports[params?.assignmentId + selectedBranch?._id]);
+  }, [reports, body, _hasHydrated]);
 
   return (
     <SafeAreaView className="flex-1">
