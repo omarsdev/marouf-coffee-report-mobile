@@ -424,13 +424,15 @@ const AddTicketsScreen = () => {
                   title={isEditable ? 'Back' : 'Add Tickets'}
                   onPress={onAddTicket}
                 />
-                {isAreaManager && isEditable && (
-                  <CustomButton
-                    title="Completed"
-                    className="flex-1 bg-[#00BF29]"
-                    onPress={onCompleteTicketHandler}
-                  />
-                )}
+                {isAreaManager &&
+                  isEditable &&
+                  ticketData?.ticket?.user !== user?._id && (
+                    <CustomButton
+                      title="Completed"
+                      className="flex-1 bg-[#00BF29]"
+                      onPress={onCompleteTicketHandler}
+                    />
+                  )}
               </View>
             </View>
           </ScrollView>
