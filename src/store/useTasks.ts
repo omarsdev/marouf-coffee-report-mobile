@@ -5,7 +5,8 @@ import {createJSONStorage, persist} from 'zustand/middleware';
 interface DateStore {
   reports: Record<string, any>;
   _hasHydrated: boolean;
-  setReports: (assignmentId: string, reportId: string, reportData: any) => void;
+  setReports: (assignmentId: string, body: any) => void;
+  removeReports: (assignmentId: string) => void;
   setHasHydrated: (state: boolean) => void;
 }
 
@@ -18,6 +19,14 @@ const reportsStore: StateCreator<DateStore> = (set, get) => ({
       reports: {
         ...state.reports,
         [assignmentId]: body,
+      },
+    }));
+  },
+  removeReports: assignmentId => {
+    set(state => ({
+      reports: {
+        ...state.reports,
+        [assignmentId]: undefined,
       },
     }));
   },

@@ -37,12 +37,17 @@ const ReportScreen = () => {
 
   const {selectedBranch} = useDateStore();
   const isFocused = useIsFocused();
-  const {setReports, reports, _hasHydrated} = useReportsStore();
+  const {setReports, reports, _hasHydrated, removeReports} = useReportsStore();
 
   const bottomSheetRef = useRef<BottomSheet>(null);
 
   const [body, setBody] = useState({});
   const [selectedNote, setSelectedNote] = useState(null);
+
+  const uniqueReportId = useMemo(
+    () => params?.assignmentId + selectedBranch?._id,
+    [params, selectedBranch],
+  );
 
   const {data, isLoading} = useQuery({
     queryFn: () => assignmentsAPI.getById(params?.assignmentId),
@@ -71,6 +76,7 @@ const ReportScreen = () => {
         assignmentId: data?.assignment?._id,
       };
       const res = await submissionsAPI.create(payload);
+      removeReports(uniqueReportId);
       navigation.goBack();
     } catch (error) {}
   };
@@ -107,18 +113,18 @@ const ReportScreen = () => {
     if (Object.keys(body).length === 0 || !_hasHydrated) {
       return;
     }
-    setReports(params?.assignmentId + selectedBranch?._id, body);
+    setReports(uniqueReportId, body);
   }, [body]);
 
   useEffect(() => {
     if (Object.keys(reports).length === 0 || Object.keys(body).length > 0) {
       return;
     }
-    if (!reports?.[params?.assignmentId + selectedBranch?._id]) {
+    if (!reports?.[uniqueReportId]) {
       return;
     }
 
-    setBody(reports[params?.assignmentId + selectedBranch?._id]);
+    setBody(reports[uniqueReportId]);
   }, [reports, body, _hasHydrated]);
 
   return (
