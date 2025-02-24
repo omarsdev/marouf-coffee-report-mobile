@@ -62,9 +62,10 @@ const SeeScheduleScreen = () => {
     setBranches(old => {
       return old.map(branch => {
         if (branch.index === id) {
-          return {...branch, selected: !branch.selected};
+          return {...branch, selected: true};
+        } else {
+          return {...branch, selected: false};
         }
-        return branch;
       });
     });
   };
