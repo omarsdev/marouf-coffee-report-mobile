@@ -32,7 +32,7 @@ const TicketsScreen = () => {
   const {selectedBranch} = useDateStore();
   const {user, refetchUser, isAreaManager} = useAuthStore();
 
-  const isCheckedIn = isAreaManager && user?.current_branch && user?.active;
+  const isCheckedIn = user?.current_branch && user?.active;
 
   const [query, setQuery] = useState({
     status: null,
@@ -288,7 +288,7 @@ const TicketsScreen = () => {
             ))}
           </ScrollView>
         </CustomLoadingProvider>
-        {user?.current_branch && user?.active && (
+        {isCheckedIn && (
           <CustomButton title="Checkout" onPress={onCheckoutHandler} />
         )}
         <TouchableOpacity
