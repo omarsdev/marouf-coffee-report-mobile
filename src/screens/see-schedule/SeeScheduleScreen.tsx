@@ -143,11 +143,13 @@ const SeeScheduleScreen = () => {
               {'\n'}
               {format(new Date(date), 'd LLL yyyy')}
             </Text>
-            <Text
-              className="font-poppinsLight"
-              style={{fontSize: normalize(30)}}>
-              This is your schedule for today
-            </Text>
+            {isAreaManager && (
+              <Text
+                className="font-poppinsLight"
+                style={{fontSize: normalize(30)}}>
+                This is your schedule for today
+              </Text>
+            )}
             {isAreaManager && (
               <TouchableOpacity onPress={onBranchesNavigation}>
                 <Text
