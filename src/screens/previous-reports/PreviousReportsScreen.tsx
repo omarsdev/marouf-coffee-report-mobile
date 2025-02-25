@@ -9,17 +9,26 @@ import {useQuery} from '@tanstack/react-query';
 import {assignmentsAPI} from '@/api/assignments';
 import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {format} from 'date-fns';
+import useDateStore from '@/store/useDateStore';
+import useAuthStore from '@/store/useAuth';
 
 const PreviousReportsScreen = () => {
   const navigation = useNavigation();
   const isFocused = useIsFocused();
+  const {user} = useAuthStore();
+  const isCheckedIn = user?.current_branch && user?.active;
+  const {selectedBranch} = useDateStore();
 
   const {data, isLoading} = useQuery({
     queryFn: () =>
       assignmentsAPI.get({
         completed: true,
+        ...(isCheckedIn &&
+          selectedBranch?._id && {
+            branch: selectedBranch?._id,
+          }),
       }),
-    queryKey: ['reportscompleted'],
+    queryKey: ['reportscompleted' + selectedBranch?._id + isCheckedIn],
     subscribed: isFocused,
   });
 
