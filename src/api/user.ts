@@ -12,13 +12,19 @@ export const userAPI = {
         'x-auth-token': token,
       },
     ),
-  postImage: async (body: any) =>
-    axios.post(`${baseURL}/users/upload_image`, body, {
+  postImage: async (body: any) => {
+    console.log(`${baseURL}/users/upload_image`, {
+      accept: 'application/json',
+      'Content-Type': 'multipart/form-data',
+      'x-auth-token': useAuthStore.getState().token,
+    });
+    return axios.post(`${baseURL}/users/upload_image`, body, {
       headers: {
         accept: 'application/json',
         'Content-Type': 'multipart/form-data',
         'x-auth-token': useAuthStore.getState().token,
       },
-    }),
+    });
+  },
   areaManagers: async () => HttpCall('/users/area_manager'),
 };

@@ -150,6 +150,7 @@ const AddTicketsScreen = () => {
       const res = await userAPI.postImage(formData);
       setData(old => ({...old, ticket_images: [res?.data?.url]}));
     } catch (error) {
+      console.log(error);
       console.error('onUploadImage Error:', error.message || error);
     } finally {
       setLoading(false);
