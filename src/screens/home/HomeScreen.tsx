@@ -15,6 +15,7 @@ import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {assignmentsAPI} from '@/api/assignments';
 import _ from 'lodash';
 import useAuthStore from '@/store/useAuth';
+import {format, parse} from 'date-fns';
 
 const TASKS_COLORS = [
   {bg: 'bg-[#FFF5D5]', btn: 'bg-[#F9E5A3]'},
@@ -33,7 +34,10 @@ const HomeScreen = () => {
     queryFn: () =>
       assignmentsAPI.get({
         branch: selectedBranch?._id,
-        date: date,
+        date: `${format(
+          parse(date, 'yyyy-MM-dd', new Date()), // Use the correct format for parsing
+          'yyyy/MM/dd',
+        )}Z`,
       }),
     queryKey: ['reports' + String(date) + String(selectedBranch?._id)],
     subscribed: isFocused,

@@ -1,6 +1,6 @@
 import React, {useEffect, useMemo, useState} from 'react';
 import {Platform, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {format} from 'date-fns';
+import {format, parse} from 'date-fns';
 import {twMerge} from 'tailwind-merge';
 import Feather from 'react-native-vector-icons/Feather';
 import Geolocation from 'react-native-geolocation-service';
@@ -46,7 +46,10 @@ const SeeScheduleScreen = () => {
   const {data, isLoading} = useQuery({
     queryFn: () =>
       assignmentsAPI.get({
-        date: date,
+        date: `${format(
+          parse(date, 'yyyy-MM-dd', new Date()), // Use the correct format for parsing
+          'yyyy/MM/dd',
+        )}Z`,
       }),
     queryKey: ['reports' + String(date)],
     subscribed: isFocused,
