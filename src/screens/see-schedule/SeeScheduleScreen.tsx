@@ -46,10 +46,12 @@ const SeeScheduleScreen = () => {
   const {data, isLoading} = useQuery({
     queryFn: () =>
       assignmentsAPI.get({
-        date: `${format(
-          parse(date, 'yyyy-MM-dd', new Date()), // Use the correct format for parsing
-          'yyyy/MM/dd',
-        )}Z`,
+        date: date
+          ? `${format(
+              parse(date, 'yyyy-MM-dd', new Date()), // Use the correct format for parsing
+              'yyyy/MM/dd',
+            )}Z`
+          : undefined,
       }),
     queryKey: ['reports' + String(date)],
     subscribed: isFocused,

@@ -34,10 +34,12 @@ const HomeScreen = () => {
     queryFn: () =>
       assignmentsAPI.get({
         branch: selectedBranch?._id,
-        date: `${format(
-          parse(date, 'yyyy-MM-dd', new Date()), // Use the correct format for parsing
-          'yyyy/MM/dd',
-        )}Z`,
+        date: date
+          ? `${format(
+              parse(date, 'yyyy-MM-dd', new Date()), // Use the correct format for parsing
+              'yyyy/MM/dd',
+            )}Z`
+          : undefined,
       }),
     queryKey: ['reports' + String(date) + String(selectedBranch?._id)],
     subscribed: isFocused,
