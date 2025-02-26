@@ -1,5 +1,5 @@
 import axios from 'axios';
-import {HttpCall} from './HttpCall';
+import {baseURL, HttpCall} from './HttpCall';
 import useAuthStore from '@/store/useAuth';
 
 export const userAPI = {
@@ -13,16 +13,12 @@ export const userAPI = {
       },
     ),
   postImage: async (body: any) =>
-    axios.post(
-      'https://maroufticket-9bb3c74b4061.herokuapp.com/api/users/upload_image',
-      body,
-      {
-        headers: {
-          accept: 'application/json',
-          'Content-Type': 'multipart/form-data',
-          'x-auth-token': useAuthStore.getState().token,
-        },
+    axios.post(`${baseURL}/users/upload_image`, body, {
+      headers: {
+        accept: 'application/json',
+        'Content-Type': 'multipart/form-data',
+        'x-auth-token': useAuthStore.getState().token,
       },
-    ),
+    }),
   areaManagers: async () => HttpCall('/users/area_manager'),
 };

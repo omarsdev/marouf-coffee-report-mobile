@@ -7,11 +7,13 @@ import useDateStore from '@/store/useDateStore';
 const PRODUCTION_API = 'https://marouf-ticket-ac294cbae16f.herokuapp.com/api/';
 const STAGING_API = 'https://stg-marouf-ticket-c3fae247ad08.herokuapp.com/api/';
 
+export const baseURL = PRODUCTION_API;
+
 let axiosInstance;
 
 const createAxiosInstance = async () => {
   axiosInstance = axios.create({
-    baseURL: PRODUCTION_API,
+    baseURL,
     withCredentials: true,
   });
 
