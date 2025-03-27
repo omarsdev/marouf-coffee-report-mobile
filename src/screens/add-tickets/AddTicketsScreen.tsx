@@ -26,9 +26,8 @@ import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import CustomDropdown from '@/components/custom/CustomDropdown';
 import useAuthStore from '@/store/useAuth';
 import {userAPI} from '@/api/user';
-import {ActivityIndicator} from 'react-native';
 import useTicketsStore from '@/store/useTickets';
-import FullScreenImageModal from '@/components/FullScreenImageModal';
+import AttachImageComponents from '@/components/AttachImageComponents';
 
 const AddTicketsScreen = () => {
   const {params} = useRoute();
@@ -36,8 +35,6 @@ const AddTicketsScreen = () => {
   const isFocused = useIsFocused();
   const {isAreaManager, user} = useAuthStore();
   const {defaultTickets, setTickets, tickets, reset} = useTicketsStore();
-
-  const [loading, setLoading] = useState(false);
 
   const isEditable = useMemo(() => !!params?.ticketId, [params?.ticketId]);
 
@@ -117,43 +114,16 @@ const AddTicketsScreen = () => {
     } catch (error) {}
   };
 
-  const onUploadImage = async () => {
+  const onUploadImage = async (formData: any) => {
     try {
-      setLoading(true);
-      // Step 1: Select an image
-      const result = await launchImageLibrary({
-        mediaType: 'photo', // Ensure we only pick images
-        selectionLimit: 1,
-      });
-
-      if (result.didCancel) {
-        console.error('User cancelled image selection');
-        return;
-      }
-
-      if (result.errorCode) {
-        throw new Error(`Image picker error: ${result.errorMessage}`);
-      }
-
-      const image = result.assets?.[0];
-      if (!image) {
-        throw new Error('No image selected');
-      }
-
-      let formData = new FormData();
-      formData.append('image', {
-        uri: image?.uri,
-        name: image?.fileName || `upload_${Date.now()}.jpg`,
-        type: image?.type || 'image/jpeg',
-      });
-
       const res = await userAPI.postImage(formData);
-      setData(old => ({...old, ticket_images: [res?.data?.url]}));
+      setData(prev => ({
+        ...prev,
+        ticket_images: [...(prev.ticket_images ?? []), res?.data?.url],
+      }));
     } catch (error) {
       console.log(error);
       console.error('onUploadImage Error:', error.message || error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -395,30 +365,19 @@ const AddTicketsScreen = () => {
                 </ScrollView>
               </View>
 
-              <TouchableOpacity
-                disabled={isEditable}
-                onPress={onUploadImage}
-                className="bg-[#0000000F] h-24 border-[1px] border-black rounded-3xl justify-center items-center">
-                <View className="flex-row items-center gap-3">
-                  {loading ? (
-                    <ActivityIndicator />
-                  ) : data?.ticket_images?.[0] ? (
-                    <FullScreenImageModal
-                      uri={data?.ticket_images?.[0]}
-                      className="flex-1 h-24 rounded-3xl"
-                    />
-                  ) : (
-                    <>
-                      {!isEditable && (
-                        <Entypo name="attachment" size={normalize(17)} />
-                      )}
-                      <Text className="text-lg font-normal leading-6 text-left underline">
-                        {isEditable ? 'No Image' : 'Attach Image'}
-                      </Text>
-                    </>
-                  )}
-                </View>
-              </TouchableOpacity>
+              <AttachImageComponents
+                isEditable={isEditable}
+                images={data?.ticket_images}
+                onUploadImage={onUploadImage}
+                setImages={data => {
+                  // console.log(data);
+                  setData(prev => ({
+                    ...prev,
+                    ticket_images: data,
+                  }));
+                }}
+              />
+
               <View className="flex-row gap-4">
                 <CustomButton
                   className="flex-1"
