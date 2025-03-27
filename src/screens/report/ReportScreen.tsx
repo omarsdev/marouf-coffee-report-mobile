@@ -97,6 +97,22 @@ const ReportScreen = () => {
       },
     }));
   };
+  const onCreateImage = async (image, question) => {
+    if (!question?._id) return; // Ensure question is valid
+
+    const {_id: questionId} = question;
+    setBody(prevState => ({
+      ...prevState,
+      [questionId]: {
+        ...prevState[questionId],
+        questionId,
+        note: {
+          ...prevState?.[questionId]?.note,
+          image: [...(prevState?.[questionId]?.note?.image ?? []), image],
+        },
+      },
+    }));
+  };
 
   const onNotePressHandler = question => {
     setSelectedNote(question);
@@ -239,6 +255,7 @@ const ReportScreen = () => {
         setSelectedNote={setSelectedNote}
         setBody={setBody}
         onCreate={onCreate}
+        onCreateImage={onCreateImage}
         body={body}
       />
     </SafeAreaView>

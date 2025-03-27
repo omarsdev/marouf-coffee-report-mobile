@@ -63,12 +63,13 @@ const ViewNoteComponent = forwardRef<BottomSheet, {}>((props, ref) => {
               }}
             />
           </View>
-          <View className="bg-[#0000000F] h-24 border-[1px] border-black rounded-3xl justify-center items-center">
-            <View className="flex-row items-center gap-3">
+          <View className="bg-[#0000000F] min-h-24 border-[1px] border-black rounded-3xl justify-center items-center">
+            <View className="flex-row items-center">
               {getNoteValue(selectedNote?.questionAnswer?.note)?.image ? (
                 <FullScreenImageModal
                   uri={getNoteValue(selectedNote?.questionAnswer?.note)?.image}
                   className="flex-1 h-28 rounded-3xl"
+                  isEditable={true}
                 />
               ) : (
                 <>
