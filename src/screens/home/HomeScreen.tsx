@@ -16,6 +16,7 @@ import {assignmentsAPI} from '@/api/assignments';
 import _ from 'lodash';
 import useAuthStore from '@/store/useAuth';
 import {format, parse} from 'date-fns';
+import SelectedBranchComponents from '@/components/SelectedBranchComponents';
 
 const TASKS_COLORS = [
   {bg: 'bg-[#FFF5D5]', btn: 'bg-[#F9E5A3]'},
@@ -53,19 +54,7 @@ const HomeScreen = () => {
 
       <CustomLoadingProvider loading={isLoading}>
         <ScrollView showsVerticalScrollIndicator={false}>
-          {selectedBranch?.name && (
-            <View className="mt-7 gap-3">
-              <Text className="font-poppins text-lg font-normal leading-6 text-left">
-                Branch Name
-              </Text>
-              <View className="p-5 flex-row gap-4 bg-[#F3F3F3] rounded-2xl">
-                <EvilIcons name="location" size={22} color={'#000'} />
-                <Text className="font-poppins text-lg font-normal leading-6 text-left">
-                  {selectedBranch?.name?.en}
-                </Text>
-              </View>
-            </View>
-          )}
+          <SelectedBranchComponents />
           <View className="mt-7">
             <Text className="font-poppins text-xl font-normal leading-7 text-left">
               Keep the branches running smoothly, start with detailed checklist

@@ -11,6 +11,7 @@ import CustomLoadingProvider from '@/components/custom/CustomLoadingProvider';
 import {format} from 'date-fns';
 import useDateStore from '@/store/useDateStore';
 import useAuthStore from '@/store/useAuth';
+import SelectedBranchComponents from '@/components/SelectedBranchComponents';
 
 const PreviousReportsScreen = () => {
   const navigation = useNavigation();
@@ -45,6 +46,7 @@ const PreviousReportsScreen = () => {
       <HeaderComponents />
       <CustomLoadingProvider loading={isLoading}>
         <ScrollView showsVerticalScrollIndicator={false}>
+          <SelectedBranchComponents />
           <Text className="my-7 font-poppins text-2xl font-normal leading-9 text-left">
             Previous reports
           </Text>
