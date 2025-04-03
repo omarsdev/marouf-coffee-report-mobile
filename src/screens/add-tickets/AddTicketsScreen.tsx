@@ -36,6 +36,7 @@ const AddTicketsScreen = () => {
   const {isAreaManager, user} = useAuthStore();
   const {defaultTickets, setTickets, tickets, reset} = useTicketsStore();
 
+  const isQC = user?.role === 2 && user?.role_type === 'QC';
   const isEditable = useMemo(() => !!params?.ticketId, [params?.ticketId]);
 
   const {data: ticketData, isLoading: ticketLoading} = useQuery({
@@ -213,6 +214,53 @@ const AddTicketsScreen = () => {
                       value={data.area_manager}
                       onChange={value =>
                         setData(old => ({...old, area_manager: value}))
+                      }
+                    />
+                  </View>
+                </>
+              ) : isQC ? (
+                <>
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      {isEditable ? 'Department' : 'Add Department'}
+                    </Text>
+                    <CustomDropdown
+                      disable={isEditable}
+                      data={departmentsData}
+                      placeholder="Choose an option"
+                      value={data.department}
+                      onChange={value =>
+                        setData(old => ({...old, department: value}))
+                      }
+                    />
+                  </View>
+
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      {isEditable ? 'Area manager' : 'Add area manager'}
+                    </Text>
+                    <CustomDropdown
+                      disable={isEditable}
+                      data={areaManagersData}
+                      placeholder={'Not Selected ❌'}
+                      value={data.area_manager}
+                      onChange={value =>
+                        setData(old => ({...old, area_manager: value}))
+                      }
+                    />
+                  </View>
+
+                  <View>
+                    <Text className="mb-3 font-poppins font-normal leading-6 text-left">
+                      {isEditable ? 'Branch' : 'Pickup Branch'}
+                    </Text>
+                    <CustomDropdown
+                      disable={isEditable}
+                      data={branchesData}
+                      placeholder="Choose an option"
+                      value={data.branch}
+                      onChange={value =>
+                        setData(old => ({...old, branch: value}))
                       }
                     />
                   </View>

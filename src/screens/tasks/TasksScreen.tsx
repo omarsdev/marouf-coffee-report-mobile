@@ -15,9 +15,23 @@ const TasksScreen = () => {
 
   const {user} = useAuthStore();
 
+  // console.log(user.role === 3 && user.branch_access);
+
   const {data, isLoading} = useQuery({
-    queryFn: () => ticketsAPI.get({area_manager: user?._id}),
-    queryKey: ['tickets', JSON.stringify({area_manager: user?._id})],
+    queryFn: () =>
+      ticketsAPI.get(
+        user.role === 3 && user.branch_access
+          ? {branches: user?.branch_access}
+          : {area_manager: user?._id},
+      ),
+    queryKey: [
+      'tickets',
+      JSON.stringify(
+        user.role === 3 && user.branch_access
+          ? {branches: user?.branch_access}
+          : {area_manager: user?._id},
+      ),
+    ],
     subscribed: isFocused,
   });
 

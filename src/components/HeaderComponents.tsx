@@ -113,9 +113,7 @@ const HeaderComponents = () => {
 
   const headersData = useMemo(() => {
     if (isAreaManager) return data;
-    return data.filter(
-      e => !['ChooseBranchScreen', 'TasksScreen'].includes(e.screenName),
-    );
+    return data.filter(e => !['ChooseBranchScreen'].includes(e.screenName));
   }, [isAreaManager, data]);
 
   return (
