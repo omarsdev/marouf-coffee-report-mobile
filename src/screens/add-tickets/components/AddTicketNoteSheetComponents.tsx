@@ -9,8 +9,8 @@ const AddTicketNoteSheetComponents = forwardRef<BottomSheet, {}>(
     const {
       selectedNote,
       setSelectedNote,
-      type = 'Transfer',
-      onTransferTicketHandler,
+      actionType = 'Transfer',
+      onTransferTicketHandler = () => {},
     } = props;
 
     // Handle bottom sheet state changes
@@ -49,8 +49,10 @@ const AddTicketNoteSheetComponents = forwardRef<BottomSheet, {}>(
             />
           </View>
           <CustomButton
-            title={type}
-            className="bg-[#bf6f00]"
+            title={actionType}
+            className={
+              actionType === 'Transfer' ? 'bg-[#bf6f00]' : 'bg-[#00BF29]'
+            }
             onPress={onTransferTicketHandler}
           />
         </BottomSheetView>

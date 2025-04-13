@@ -37,6 +37,7 @@ const AddTicketsScreen = () => {
 
   const noteSheetRef = useRef<BottomSheet>(null);
   const [selectedNote, setSelectedNote] = useState<any>(null);
+  const [actionType, setActionType] = useState<any>('');
 
   const isQC = user?.role === 2 && user?.role_type === 'QC';
   const isUpdateDept = !!params?.isUpdateDept && isAreaManager;
@@ -114,7 +115,10 @@ const AddTicketsScreen = () => {
 
   const onCompleteTicketHandler = async () => {
     try {
-      await ticketsAPI.updateStatus(params?.ticketId, 1);
+      await ticketsAPI.transferStatus(params?.ticketId, {
+        progress_note: selectedNote,
+        resolve: true,
+      });
       navigation.goBack();
     } catch (error) {}
   };
@@ -454,6 +458,7 @@ const AddTicketsScreen = () => {
                       ticketData?.ticket?.department === data?.department
                     }
                     onPress={() => {
+                      setActionType('Transfer');
                       noteSheetRef.current?.expand();
                     }}
                   />
@@ -464,6 +469,10 @@ const AddTicketsScreen = () => {
                     title="Completed"
                     className="flex-1 bg-[#00BF29]"
                     onPress={onCompleteTicketHandler}
+                    onPress={() => {
+                      setActionType('Completed');
+                      noteSheetRef.current?.expand();
+                    }}
                   />
                 ) : null}
               </View>
@@ -474,7 +483,15 @@ const AddTicketsScreen = () => {
           ref={noteSheetRef}
           selectedNote={selectedNote}
           setSelectedNote={setSelectedNote}
-          onTransferTicketHandler={onTransferTicketHandler}
+          onTransferTicketHandler={
+            actionType === 'Transfer'
+              ? onTransferTicketHandler
+              : actionType === 'Completed'
+              ? onCompleteTicketHandler
+              : null
+          }
+          actionType={actionType}
+          setActionType={setActionType}
         />
       </ContainerComponents>
     </TouchableWithoutFeedback>
