@@ -448,7 +448,8 @@ const AddTicketsScreen = () => {
                   title={isEditable ? 'Back' : 'Add Tickets'}
                   onPress={onAddTicket}
                 />
-                {isUpdateDept ? (
+                {isUpdateDept &&
+                ticketData?.ticket?.department !== data?.department ? (
                   <CustomButton
                     title="Transfer"
                     className="flex-1 bg-[#bf6f00]"
