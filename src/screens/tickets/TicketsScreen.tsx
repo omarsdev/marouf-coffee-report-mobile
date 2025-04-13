@@ -277,6 +277,9 @@ const TicketsScreen = () => {
                         </View>
                       )}
                     </View>
+                    <Text className="text-sm font-semibold leading-5 text-left text-[#1D1B20]">
+                      From: {ticket?.user?.name?.en}
+                    </Text>
                   </View>
                 </View>
                 <View className="mt-5">
