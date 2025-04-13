@@ -60,7 +60,6 @@ const AttachImageComponents = ({
         await onUploadImage(formData);
       }
     } catch (error) {
-      console.log(error);
       console.error('onUploadImage Error:', error.message || error);
     } finally {
       setLoading(false);

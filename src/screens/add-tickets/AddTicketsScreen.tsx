@@ -127,7 +127,6 @@ const AddTicketsScreen = () => {
         ticket_images: [...(prev.ticket_images ?? []), res?.data?.url],
       }));
     } catch (error) {
-      console.log(error);
       console.error('onUploadImage Error:', error.message || error);
     }
   };
@@ -146,7 +145,6 @@ const AddTicketsScreen = () => {
         transfer_note: selectedNote,
         department: data?.department,
       });
-      console.log(res);
       navigation.goBack();
     } catch (error) {}
   };
@@ -434,7 +432,6 @@ const AddTicketsScreen = () => {
                 images={data?.ticket_images}
                 onUploadImage={onUploadImage}
                 setImages={data => {
-                  // console.log(data);
                   setData(prev => ({
                     ...prev,
                     ticket_images: data,
