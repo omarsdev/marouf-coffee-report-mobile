@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,7 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedback,
   Keyboard,
-  Image,
 } from 'react-native';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {launchImageLibrary} from 'react-native-image-picker';
 
 import ContainerComponents from '@/components/container/ContainerComponents';
 import HeaderComponents from '@/components/HeaderComponents';
@@ -28,6 +25,8 @@ import useAuthStore from '@/store/useAuth';
 import {userAPI} from '@/api/user';
 import useTicketsStore from '@/store/useTickets';
 import AttachImageComponents from '@/components/AttachImageComponents';
+import AddTicketNoteSheetComponents from './components/AddTicketNoteSheetComponents';
+import BottomSheet from '@gorhom/bottom-sheet';
 
 const AddTicketsScreen = () => {
   const {params} = useRoute();
@@ -36,7 +35,12 @@ const AddTicketsScreen = () => {
   const {isAreaManager, user} = useAuthStore();
   const {defaultTickets, setTickets, tickets, reset} = useTicketsStore();
 
+  const noteSheetRef = useRef<BottomSheet>(null);
+  const [selectedNote, setSelectedNote] = useState<any>(null);
+
   const isQC = user?.role === 2 && user?.role_type === 'QC';
+  const isUpdateDept = !!params?.isUpdateDept && isAreaManager;
+
   const isEditable = useMemo(() => !!params?.ticketId, [params?.ticketId]);
 
   const {data: ticketData, isLoading: ticketLoading} = useQuery({
@@ -135,6 +139,18 @@ const AddTicketsScreen = () => {
     }));
   };
 
+  const onTransferTicketHandler = async () => {
+    try {
+      const res = await ticketsAPI.transferStatus(params?.ticketId, {
+        transfer_to_department: true,
+        transfer_note: selectedNote,
+        department: data?.department,
+      });
+      console.log(res);
+      navigation.goBack();
+    } catch (error) {}
+  };
+
   useEffect(() => {
     if (isEditable) {
       return;
@@ -178,7 +194,7 @@ const AddTicketsScreen = () => {
                       {isEditable ? 'Department' : 'Add Department'}
                     </Text>
                     <CustomDropdown
-                      disable={isEditable}
+                      disable={isUpdateDept ? false : isEditable}
                       data={departmentsData}
                       placeholder={'Not Selected ❌'}
                       value={data.department}
@@ -432,19 +448,36 @@ const AddTicketsScreen = () => {
                   title={isEditable ? 'Back' : 'Add Tickets'}
                   onPress={onAddTicket}
                 />
-                {isAreaManager &&
+                {isUpdateDept ? (
+                  <CustomButton
+                    title="Transfer"
+                    className="flex-1 bg-[#bf6f00]"
+                    disabled={
+                      ticketData?.ticket?.department === data?.department
+                    }
+                    onPress={() => {
+                      noteSheetRef.current?.expand();
+                    }}
+                  />
+                ) : isAreaManager &&
                   isEditable &&
-                  ticketData?.ticket?.user !== user?._id && (
-                    <CustomButton
-                      title="Completed"
-                      className="flex-1 bg-[#00BF29]"
-                      onPress={onCompleteTicketHandler}
-                    />
-                  )}
+                  ticketData?.ticket?.user?._id !== user?._id ? (
+                  <CustomButton
+                    title="Completed"
+                    className="flex-1 bg-[#00BF29]"
+                    onPress={onCompleteTicketHandler}
+                  />
+                ) : null}
               </View>
             </View>
           </ScrollView>
         </CustomLoadingProvider>
+        <AddTicketNoteSheetComponents
+          ref={noteSheetRef}
+          selectedNote={selectedNote}
+          setSelectedNote={setSelectedNote}
+          onTransferTicketHandler={onTransferTicketHandler}
+        />
       </ContainerComponents>
     </TouchableWithoutFeedback>
   );
