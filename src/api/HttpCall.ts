@@ -39,7 +39,11 @@ const createAxiosInstance = async () => {
         message:
           typeof error?.response?.data === 'string'
             ? error?.response?.data
-            : error?.response?.data?.message,
+            : typeof error?.response?.data?.message === 'string'
+            ? error?.response?.data?.message
+            : typeof error?.response?.data?.error === 'string'
+            ? error?.response?.data?.error
+            : 'An Error occurred',
         type: 'danger',
       });
       return Promise.reject(
