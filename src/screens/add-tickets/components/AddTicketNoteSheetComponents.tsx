@@ -51,7 +51,7 @@ const AddTicketNoteSheetComponents = forwardRef<BottomSheet, {}>(
           <CustomButton
             title={actionType}
             className={
-              actionType === 'Transfer' ? 'bg-[#bf6f00]' : 'bg-[#00BF29]'
+              actionType === 'Transfer' ? 'bg-[#00BFA1]' : 'bg-[#00BF29]'
             }
             onPress={onTransferTicketHandler}
           />

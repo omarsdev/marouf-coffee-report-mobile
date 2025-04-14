@@ -453,7 +453,7 @@ const AddTicketsScreen = () => {
                 ticketData?.ticket?.department !== data?.department ? (
                   <CustomButton
                     title="Transfer"
-                    className="flex-1 bg-[#bf6f00]"
+                    className="flex-1 bg-[#00BFA1]"
                     disabled={
                       ticketData?.ticket?.department === data?.department
                     }

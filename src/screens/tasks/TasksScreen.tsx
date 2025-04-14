@@ -69,10 +69,16 @@ const TasksScreen = () => {
                           In Progress
                         </Text>
                       </View>
-                    ) : (
+                    ) : ticket?.status === 0 ? (
                       <View className="bg-[#00BF29] px-2 rounded-3xl justify-center items-center ml-2">
                         <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
                           Completed
+                        </Text>
+                      </View>
+                    ) : (
+                      <View className="bg-[#00BFA1] px-2 rounded-3xl justify-center items-center ml-2">
+                        <Text className="text-xs font-normal leading-6 text-left font-poppins text-white">
+                          Transfer
                         </Text>
                       </View>
                     )}
