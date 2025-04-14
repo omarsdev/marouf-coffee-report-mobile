@@ -196,7 +196,13 @@ const AddTicketsScreen = () => {
                       {isEditable ? 'Department' : 'Add Department'}
                     </Text>
                     <CustomDropdown
-                      disable={isUpdateDept ? false : isEditable}
+                      disable={
+                        ticketData?.ticket?.status === 1
+                          ? true
+                          : isUpdateDept
+                          ? false
+                          : isEditable
+                      }
                       data={departmentsData}
                       placeholder={'Not Selected ❌'}
                       value={data.department}
@@ -449,32 +455,36 @@ const AddTicketsScreen = () => {
                   title={isEditable ? 'Back' : 'Add Tickets'}
                   onPress={onAddTicket}
                 />
-                {isUpdateDept &&
-                ticketData?.ticket?.department !== data?.department ? (
-                  <CustomButton
-                    title="Transfer"
-                    className="flex-1 bg-[#00BFA1]"
-                    disabled={
-                      ticketData?.ticket?.department === data?.department
-                    }
-                    onPress={() => {
-                      setActionType('Transfer');
-                      noteSheetRef.current?.expand();
-                    }}
-                  />
-                ) : isAreaManager &&
-                  isEditable &&
-                  ticketData?.ticket?.user?._id !== user?._id ? (
-                  <CustomButton
-                    title="Completed"
-                    className="flex-1 bg-[#00BF29]"
-                    onPress={onCompleteTicketHandler}
-                    onPress={() => {
-                      setActionType('Completed');
-                      noteSheetRef.current?.expand();
-                    }}
-                  />
-                ) : null}
+
+                {ticketData?.ticket?.status !== 1 && (
+                  <>
+                    {isUpdateDept &&
+                    ticketData?.ticket?.department !== data?.department ? (
+                      <CustomButton
+                        title="Transfer"
+                        className="flex-1 bg-[#00BFA1]"
+                        disabled={
+                          ticketData?.ticket?.department === data?.department
+                        }
+                        onPress={() => {
+                          setActionType('Transfer');
+                          noteSheetRef.current?.expand();
+                        }}
+                      />
+                    ) : isAreaManager &&
+                      isEditable &&
+                      ticketData?.ticket?.user?._id !== user?._id ? (
+                      <CustomButton
+                        title="Completed"
+                        className="flex-1 bg-[#00BF29]"
+                        onPress={() => {
+                          setActionType('Completed');
+                          noteSheetRef.current?.expand();
+                        }}
+                      />
+                    ) : null}
+                  </>
+                )}
               </View>
             </View>
           </ScrollView>
